@@ -17,6 +17,7 @@
 
         .signup-page {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -51,7 +52,7 @@
             padding: 12px 14px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 15px;
+            font-size: 16px;
         }
         .signup-input:focus { outline: none; border-color: #346c43; }
 

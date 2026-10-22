@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#346c43" />
     <title>MyCamp</title>
-    <link href="Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="Content/Site.css?v=2" rel="stylesheet" type="text/css" />
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
@@ -192,6 +192,6 @@
         </footer>
     </form>
 
-    <script src="Content/header.js"></script>
+    <script src="Content/header.js?v=2"></script>
 </body>
 </html>

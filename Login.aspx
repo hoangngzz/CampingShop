@@ -17,6 +17,7 @@
 
         .login-page {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -43,6 +44,7 @@
             padding: 12px;
             border: 1px solid #d5d9df;
             border-radius: 6px;
+            font-size: 16px;
         }
         .login-input:focus { outline: none; border-color: #346c43; }
 

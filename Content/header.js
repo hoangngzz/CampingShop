@@ -18,7 +18,25 @@
         var m = /[?&]q=([^&]*)/.exec(location.search);
         if (m) searchInput.value = decodeURIComponent(m[1].replace(/\+/g, ' '));
     }
-
+    // ===== Menu "Sắp xếp": chạm để mở / đóng =====
+    var sortDd = document.querySelector('.sort-dropdown');
+    var sortBtn = sortDd && sortDd.querySelector('.sort-toggle');
+    if (sortDd && sortBtn) {
+        var setSortOpen = function (open) {
+            sortDd.classList.toggle('open', open);
+            sortBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        sortBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            setSortOpen(!sortDd.classList.contains('open'));
+        });
+        document.addEventListener('click', function (e) {
+            if (!sortDd.contains(e.target)) setSortOpen(false);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setSortOpen(false);
+        });
+    }
     var body = document.body;
     var nav = document.getElementById('mainNav');
     var toggle = document.getElementById('navToggle');
