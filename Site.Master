@@ -1,0 +1,197 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="Demo_btl_10_10.Site" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#346c43" />
+    <title>MyCamp</title>
+    <link href="Content/Site.css" rel="stylesheet" type="text/css" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <%-- Bộ biểu tượng dùng chung cho header --%>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+        <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" /></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></symbol>
+        <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" /></symbol>
+        <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></symbol>
+        <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></symbol>
+        <symbol id="i-tent" viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z" /><path d="M12 20l-3.5-6h7L12 20z" /></symbol>
+    </svg>
+
+    <form id="form1" runat="server">
+        <header class="site-header">
+
+            <%-- Thanh trên cùng (chỉ hiện trên máy tính) --%>
+            <div class="topbar">
+                <div class="container topbar-inner">
+                    <div class="topbar-links">
+                        <a class="topbar-contact" href="tel:0987654321"><svg class="ico"><use href="#i-phone" /></svg>0987654321</a>
+                        <a class="topbar-contact" href="mailto:hotro@Mycamp.vn"><svg class="ico"><use href="#i-mail" /></svg>hotro@Mycamp.vn</a>
+                    </div>
+                    <div class="topbar-links">
+                        <% if (IsLoggedIn) { %>
+                        <span class="hello"><svg class="ico"><use href="#i-user" /></svg>Xin chào, <%: DisplayName %></span>
+                        <% if (IsAdmin) { %><a class="topbar-btn topbar-btn-ghost" href="Admin.aspx">Quản trị</a><% } %>
+                        <a class="topbar-btn topbar-btn-ghost" href="Login.aspx?logout=1">Đăng xuất</a>
+                        <% } else { %>
+                        <a class="topbar-btn topbar-btn-ghost" href="SignUp.aspx">Đăng ký</a>
+                        <a class="topbar-btn topbar-btn-solid" href="Login.aspx">Đăng nhập</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-sticky">
+                <div class="header-main">
+                    <div class="container header-main-inner">
+                        <button type="button" class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-controls="mainNav" aria-expanded="false">
+                            <svg class="ico"><use href="#i-menu" /></svg>
+                        </button>
+
+                        <div class="logo">
+                            <a href="Default.aspx"><svg class="ico"><use href="#i-tent" /></svg><span>MyCamp</span></a>
+                        </div>
+
+                        <div class="search-box" role="search">
+                            <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" />
+                            <button type="button" id="searchBtn" title="Tìm kiếm" aria-label="Tìm kiếm"><svg class="ico"><use href="#i-search" /></svg></button>
+                        </div>
+
+                        <a class="cart-btn" href="Cart.aspx" aria-label="Giỏ hàng">
+                            <svg class="ico"><use href="#i-cart" /></svg>
+                            <span class="cart-label">Giỏ hàng</span>
+                            <span class="cart-count" <%= CartCount > 0 ? "style=\"display:inline-block\"" : "" %>><%= CartCount %></span>
+                        </a>
+                    </div>
+                </div>
+
+                <%-- Lớp mờ phía sau menu trượt (mobile) --%>
+                <div class="nav-overlay" id="navOverlay"></div>
+
+                <nav class="main-nav" id="mainNav" aria-label="Menu chính">
+                    <%-- Đầu menu trượt: thông tin tài khoản (chỉ hiện trên mobile) --%>
+                    <div class="drawer-head">
+                        <div class="drawer-user">
+                            <svg class="ico"><use href="#i-user" /></svg>
+                            <div>
+                                <% if (IsLoggedIn) { %>
+                                <strong>Xin chào, <%: DisplayName %></strong>
+                                <div class="drawer-auth">
+                                    <% if (IsAdmin) { %><a href="Admin.aspx">Quản trị</a><% } %>
+                                    <a href="Login.aspx?logout=1">Đăng xuất</a>
+                                </div>
+                                <% } else { %>
+                                <strong>Chào bạn!</strong>
+                                <div class="drawer-auth">
+                                    <a href="Login.aspx">Đăng nhập</a>
+                                    <a href="SignUp.aspx">Đăng ký</a>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <button type="button" class="drawer-close" id="navClose" aria-label="Đóng menu">
+                            <svg class="ico"><use href="#i-close" /></svg>
+                        </button>
+                    </div>
+
+                    <div class="container main-nav-inner">
+                        <ul class="nav-list">
+                            <li class="nav-item"><a class="nav-link" href="Default.aspx">Trang chủ</a></li>
+
+                            <li class="nav-item has-dropdown">
+                                <a class="nav-link" href="Products.aspx">Sản phẩm</a>
+                                <button type="button" class="dd-toggle" aria-label="Mở danh mục sản phẩm" aria-expanded="false">
+                                    <svg class="ico"><use href="#i-chevron" /></svg>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a href="Products.aspx?loai=leu">Lều cắm trại</a>
+                                    <a href="Products.aspx?loai=den">Đèn chiếu sáng</a>
+                                    <a href="Products.aspx?loai=ba-lo">Ba lô - túi</a>
+                                    <a href="Products.aspx?loai=thiet-bi">Thiết bị cắm trại</a>
+                                    <a href="Products.aspx?loai=xe-dap">Xe đạp</a>
+                                </div>
+                            </li>
+
+                            <li class="nav-item"><a class="nav-link" href="Contact.aspx">Liên hệ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="News.aspx">Tin tức</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="drawer-foot">
+                        <a href="tel:0987654321">0987654321</a><br />
+                        <a href="mailto:hotro@Mycamp.vn">hotro@Mycamp.vn</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div class="footer-col footer-brand">
+                    <a class="footer-logo" href="Default.aspx"><svg class="ico"><use href="#i-tent" /></svg><span>MyCamp</span></a>
+                    <p>Chuyên lều trại, đèn chiếu sáng, ba lô và xe đạp cho những chuyến dã ngoại, cắm trại cùng gia đình và bạn bè.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Danh mục</h3>
+                    <ul>
+                        <li><a href="Products.aspx?loai=leu">Lều cắm trại</a></li>
+                        <li><a href="Products.aspx?loai=den">Đèn chiếu sáng</a></li>
+                        <li><a href="Products.aspx?loai=ba-lo">Ba lô - túi</a></li>
+                        <li><a href="Products.aspx?loai=thiet-bi">Thiết bị cắm trại</a></li>
+                        <li><a href="Products.aspx?loai=xe-dap">Xe đạp</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Liên kết nhanh</h3>
+                    <ul>
+                        <% if (IsLoggedIn) { %>
+                        <% if (IsAdmin) { %><li><a href="Admin.aspx">Quản trị</a></li><% } %>
+                        <li><a href="Login.aspx?logout=1">Đăng xuất</a></li>
+                        <% } else { %>
+                        <li><a href="Login.aspx">Đăng nhập</a></li>
+                        <li><a href="SignUp.aspx">Đăng ký</a></li>
+                        <% } %>
+                        <li><a href="Cart.aspx">Giỏ hàng</a></li>
+                        <li><a href="Products.aspx">Tất cả sản phẩm</a></li>
+                        <li><a href="News.aspx">Tin tức</a></li>
+                        <li><a href="Contact.aspx">Liên hệ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Liên hệ</h3>
+                    <ul class="footer-contact">
+                        <li><svg class="ico"><use href="#i-pin" /></svg><span>Hà Nội, Việt Nam</span></li>
+                        <li><svg class="ico"><use href="#i-phone" /></svg><a href="tel:0987654321">0987654321</a></li>
+                        <li><svg class="ico"><use href="#i-mail" /></svg><a href="mailto:hotro@Mycamp.vn">hotro@Mycamp.vn</a></li>
+                        <li><svg class="ico"><use href="#i-clock" /></svg><span>8:00 - 21:00, hằng ngày</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="container">© <%= DateTime.Now.Year %> MyCamp. Dự án học tập môn Lập trình Web (ASP.NET Web Forms).</div>
+            </div>
+        </footer>
+    </form>
+
+    <script src="Content/header.js"></script>
+</body>
+</html>
