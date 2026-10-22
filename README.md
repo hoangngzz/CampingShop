@@ -86,9 +86,11 @@ Thu-main/
 
 3. Khôi phục các package NuGet nếu được yêu cầu.
 
-4. Đặt trang khởi động phù hợp, ví dụ `Default.aspx`.
+4. Trên tab Build -> chọn Clean Solution -> Rebuild/Build Solution.
 
-5. Nhấn `F5` hoặc `Ctrl + F5` để chạy website.
+5. Đặt trang khởi động phù hợp, ví dụ `Default.aspx`.
+
+6. Nhấn `F5` hoặc `Ctrl + F5` để chạy website.
 
 ## 👥 Phát triển dự án
 
