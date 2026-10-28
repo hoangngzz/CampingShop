@@ -79,7 +79,7 @@ Thu-main/
 1. Clone repository:
 
    ```bash
-   git clone https://github.com/dthang-19/Thu.git
+   git clone https://github.com/hoangngzz/CampingShop.git
    ```
 
 2. Mở file solution `.sln` bằng Visual Studio.
