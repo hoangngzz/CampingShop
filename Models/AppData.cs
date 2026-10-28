@@ -9,16 +9,15 @@ using System.Text;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.SessionState;
-using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace Demo_btl_10_10
 {
     /// <summary>
-    /// Kho dữ liệu dùng chung cho cả website (sản phẩm, khách hàng, đánh giá, đơn hàng),
-    /// lưu trong Application (khởi tạo ở Global.asax).
+    /// Kho dữ liệu dùng chung cho cả website (sản phẩm, khách hàng, đánh giá, đơn hàng, tin tức, lời nhắn liên hệ).
+    /// Dữ liệu nằm trong Application để đọc nhanh; mỗi lần thêm/sửa/xóa đều ghi lại ra MỘT file chung App_Data/data.json,
+    /// khi website khởi động thì nạp lại từ file đó (chưa có file thì dùng dữ liệu mẫu).
     /// Mọi thao tác đọc/ghi đều Lock/UnLock để nhiều người truy cập cùng lúc không bị lỗi.
-    /// Tài khoản (khách hàng/admin) còn được lưu ra App_Data/customers.xml để không mất khi website khởi động lại.
-    /// Các dữ liệu khác (sản phẩm, đánh giá, đơn hàng, ...) nằm trong bộ nhớ và quay về dữ liệu mẫu khi khởi động lại.
     /// </summary>
     public static class AppData
     {
@@ -55,51 +54,135 @@ namespace Demo_btl_10_10
 
         static readonly CultureInfo Vi = new CultureInfo("vi-VN");
 
+        // Giữ tham chiếu tới Application ngay từ Application_Start để không phụ thuộc HttpContext.Current
+        static HttpApplicationState _app;
+
         static HttpApplicationState App
         {
-            get { return HttpContext.Current.Application; }
+            get { return _app ?? HttpContext.Current.Application; }
+        }
+
+        // ===== Dữ liệu lưu ra file =====
+        class DataFile
+        {
+            public List<ShopProduct> Products { get; set; }
+            public List<Customer> Customers { get; set; }
+            public List<Review> Reviews { get; set; }
+            public List<Order> Orders { get; set; }
+            public List<ContactMessage> Messages { get; set; }
+            public List<Article> Articles { get; set; }
+        }
+
+        static string DataPath
+        {
+            get { return HostingEnvironment.MapPath("~/App_Data/data.json"); }
+        }
+
+        /// <summary>Đọc file dữ liệu. Trả về null nếu chưa có file hoặc file hỏng (file hỏng được đổi tên để không bị ghi đè).</summary>
+        static DataFile LoadData()
+        {
+            string path = DataPath;
+            try
+            {
+                if (!File.Exists(path)) return null;
+                string json = File.ReadAllText(path, Encoding.UTF8);
+                return JsonConvert.DeserializeObject<DataFile>(json);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Không đọc được data.json: " + ex.Message);
+                try { File.Move(path, path + ".loi-" + DateTime.Now.ToString("yyyyMMddHHmmss")); }
+                catch (Exception) { }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Ghi toàn bộ dữ liệu ra file. Phải được gọi khi đang giữ App.Lock().
+        /// Ghi file tạm rồi thay thế để không hỏng file cũ nếu lỗi giữa chừng.
+        /// </summary>
+        static void Persist()
+        {
+            try
+            {
+                DataFile data = new DataFile
+                {
+                    Products = (List<ShopProduct>)App[KProducts],
+                    Customers = (List<Customer>)App[KCustomers],
+                    Reviews = (List<Review>)App[KReviews],
+                    Orders = (List<Order>)App[KOrders],
+                    Messages = (List<ContactMessage>)App[KMessages],
+                    Articles = (List<Article>)App[KArticles]
+                };
+
+                string path = DataPath;
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                string tmp = path + ".tmp";
+                File.WriteAllText(tmp, JsonConvert.SerializeObject(data, Formatting.Indented), new UTF8Encoding(false));
+                if (File.Exists(path)) File.Replace(tmp, path, null);
+                else File.Move(tmp, path);
+            }
+            catch (Exception ex)
+            {
+                // Không lưu được file thì dữ liệu vẫn dùng được trong bộ nhớ, chỉ là sẽ mất khi khởi động lại
+                Trace.TraceError("Không lưu được data.json: " + ex.Message);
+            }
+        }
+
+        static List<Customer> DefaultCustomers()
+        {
+            return new List<Customer>
+            {
+                new Customer
+                {
+                    Id = 1,
+                    FullName = "Quản trị viên",
+                    Email = "admin@mycamp.vn",
+                    Username = "admin",
+                    PasswordHash = Hash("admin"),
+                    Role = RoleAdmin,
+                    CreatedAt = DateTime.Now
+                }
+            };
         }
 
         // ===== Khởi tạo (gọi từ Application_Start trong Global.asax.cs) =====
         public static void Init(HttpApplicationState app)
         {
+            _app = app;
             app.Lock();
             try
             {
-                List<ShopProduct> products = SeedProducts();
-                app[KProducts] = products;
-                app[KNextProductId] = products.Max(p => p.Id) + 1;
+                DataFile data = LoadData();
+                if (data == null) data = new DataFile();
 
-                // Tài khoản: nạp từ file nếu đã có, chưa có thì tạo tài khoản admin mặc định
-                List<Customer> customers = LoadCustomers();
-                if (customers == null)
-                {
-                    customers = new List<Customer>();
-                    customers.Add(new Customer
-                    {
-                        Id = 1,
-                        FullName = "Quản trị viên",
-                        Email = "admin@mycamp.vn",
-                        Username = "admin",
-                        PasswordHash = Hash("admin"),
-                        Role = RoleAdmin,
-                        CreatedAt = DateTime.Now
-                    });
-                    SaveCustomers(customers);
-                }
+                // Chưa có dữ liệu nào thì dùng dữ liệu mẫu (sản phẩm, đánh giá, tài khoản admin)
+                List<ShopProduct> products = data.Products ?? SeedProducts();
+                List<Customer> customers = (data.Customers != null && data.Customers.Count > 0)
+                    ? data.Customers : DefaultCustomers();
+                List<Review> reviews = data.Reviews ?? SeedReviews();
+                List<Order> orders = data.Orders ?? new List<Order>();
+                List<ContactMessage> messages = data.Messages ?? new List<ContactMessage>();
+
+                app[KProducts] = products;
+                app[KNextProductId] = (products.Count == 0 ? 0 : products.Max(p => p.Id)) + 1;
+
                 app[KCustomers] = customers;
                 app[KNextCustomerId] = customers.Max(c => c.Id) + 1;
 
-                List<Review> reviews = SeedReviews();
                 app[KReviews] = reviews;
-                app[KNextReviewId] = reviews.Max(r => r.Id) + 1;
+                app[KNextReviewId] = (reviews.Count == 0 ? 0 : reviews.Max(r => r.Id)) + 1;
 
-                app[KOrders] = new List<Order>();
-                app[KNextOrderId] = 1;
+                app[KOrders] = orders;
+                app[KNextOrderId] = (orders.Count == 0 ? 0 : orders.Max(o => o.Id)) + 1;
 
-                app[KArticles] = SeedArticles();
-                app[KMessages] = new List<ContactMessage>();
-                app[KNextMessageId] = 1;
+                app[KMessages] = messages;
+                app[KNextMessageId] = (messages.Count == 0 ? 0 : messages.Max(m => m.Id)) + 1;
+
+                app[KArticles] = data.Articles ?? SeedArticles();
+
+                // Tạo file ngay lần chạy đầu để chắc chắn ghi được
+                Persist();
             }
             finally
             {
@@ -193,6 +276,7 @@ namespace Demo_btl_10_10
                     if (idx >= 0) list[idx] = product.Clone();
                     else list.Add(product.Clone());
                 }
+                Persist();
             }
             finally { App.UnLock(); }
         }
@@ -203,62 +287,14 @@ namespace Demo_btl_10_10
             try
             {
                 bool removed = ProductList().RemoveAll(x => x.Id == id) > 0;
-                if (removed) ReviewList().RemoveAll(r => r.ProductId == id);
+                if (removed)
+                {
+                    ReviewList().RemoveAll(r => r.ProductId == id);
+                    Persist();
+                }
                 return removed;
             }
             finally { App.UnLock(); }
-        }
-
-        // ===== Lưu tài khoản ra file (App_Data/customers.xml) =====
-        static string CustomersFile
-        {
-            get { return HostingEnvironment.MapPath("~/App_Data/customers.xml"); }
-        }
-
-        /// <summary>Đọc tài khoản từ file. Trả về null nếu chưa có file, file rỗng hoặc bị hỏng (file hỏng được đổi tên để không bị ghi đè).</summary>
-        static List<Customer> LoadCustomers()
-        {
-            string path = CustomersFile;
-            try
-            {
-                if (!File.Exists(path)) return null;
-
-                List<Customer> list;
-                using (FileStream fs = File.OpenRead(path))
-                {
-                    list = (List<Customer>)new XmlSerializer(typeof(List<Customer>)).Deserialize(fs);
-                }
-                return list != null && list.Count > 0 ? list : null;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Không đọc được customers.xml: " + ex.Message);
-                try { File.Move(path, path + ".loi-" + DateTime.Now.ToString("yyyyMMddHHmmss")); }
-                catch (Exception) { }
-                return null;
-            }
-        }
-
-        /// <summary>Ghi toàn bộ danh sách tài khoản ra file (ghi file tạm rồi thay thế để không hỏng file cũ nếu lỗi giữa chừng).</summary>
-        static void SaveCustomers(List<Customer> list)
-        {
-            try
-            {
-                string path = CustomersFile;
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                string tmp = path + ".tmp";
-                using (FileStream fs = File.Create(tmp))
-                {
-                    new XmlSerializer(typeof(List<Customer>)).Serialize(fs, list);
-                }
-                if (File.Exists(path)) File.Replace(tmp, path, null);
-                else File.Move(tmp, path);
-            }
-            catch (Exception ex)
-            {
-                // Không lưu được file thì tài khoản vẫn dùng được trong bộ nhớ, chỉ là sẽ mất khi khởi động lại
-                Trace.TraceError("Không lưu được customers.xml: " + ex.Message);
-            }
         }
 
         // ===== Tài khoản (khách hàng và quản trị viên) =====
@@ -337,7 +373,7 @@ namespace Demo_btl_10_10
                 c.CreatedAt = DateTime.Now;
                 if (c.Role != RoleAdmin) c.Role = RoleCustomer;
                 list.Add(c);
-                SaveCustomers(list);
+                Persist();
 
                 customer.Id = next;
                 error = null;
@@ -373,7 +409,7 @@ namespace Demo_btl_10_10
                 c.Username = customer.Username;
                 c.Role = role;
                 if (!string.IsNullOrEmpty(newPassword)) c.PasswordHash = Hash(newPassword);
-                SaveCustomers(list);
+                Persist();
                 error = null;
                 return true;
             }
@@ -398,7 +434,7 @@ namespace Demo_btl_10_10
                     return false;
                 }
                 list.Remove(c);
-                SaveCustomers(list);
+                Persist();
                 error = null;
                 return true;
             }
@@ -476,6 +512,7 @@ namespace Demo_btl_10_10
                     r.CreatedAt = DateTime.Now;
                     list.Add(r);
                 }
+                Persist();
                 error = null;
                 return true;
             }
@@ -521,6 +558,7 @@ namespace Demo_btl_10_10
                 o.Status = StatusPending;
                 o.CreatedAt = DateTime.Now;
                 OrderList().Add(o);
+                Persist();
                 return next;
             }
             finally { App.UnLock(); }
@@ -544,6 +582,7 @@ namespace Demo_btl_10_10
                     return false;
                 }
                 o.Status = status;
+                Persist();
                 error = null;
                 return true;
             }
@@ -578,10 +617,16 @@ namespace Demo_btl_10_10
 
                 ContactMessage m = new ContactMessage
                 {
-                    Id = next, Name = message.Name, Email = message.Email, Phone = message.Phone,
-                    Subject = message.Subject, Message = message.Message, CreatedAt = DateTime.Now
+                    Id = next,
+                    Name = message.Name,
+                    Email = message.Email,
+                    Phone = message.Phone,
+                    Subject = message.Subject,
+                    Message = message.Message,
+                    CreatedAt = DateTime.Now
                 };
                 ((List<ContactMessage>)App[KMessages]).Add(m);
+                Persist();
                 return next;
             }
             finally { App.UnLock(); }
@@ -601,8 +646,15 @@ namespace Demo_btl_10_10
         {
             ShopProduct p = new ShopProduct
             {
-                Id = id, Name = name, Price = price, OldPrice = oldPrice, Cat = cat,
-                Description = description, Material = material, Sizes = sizes, Status = status
+                Id = id,
+                Name = name,
+                Price = price,
+                OldPrice = oldPrice,
+                Cat = cat,
+                Description = description,
+                Material = material,
+                Sizes = sizes,
+                Status = status
             };
             p.Images.AddRange(images);
             p.Colors.AddRange(colors.Split(',').Select(c => c.Trim()).Where(c => c.Length > 0));
@@ -613,8 +665,13 @@ namespace Demo_btl_10_10
         {
             return new Review
             {
-                Id = id, ProductId = productId, CustomerId = 0, AuthorName = author,
-                Rating = rating, Comment = comment, CreatedAt = DateTime.Now.AddDays(-daysAgo)
+                Id = id,
+                ProductId = productId,
+                CustomerId = 0,
+                AuthorName = author,
+                Rating = rating,
+                Comment = comment,
+                CreatedAt = DateTime.Now.AddDays(-daysAgo)
             };
         }
 

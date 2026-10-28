@@ -1,0 +1,353 @@
+{
+  "Products": [
+    {
+      "Id": 1,
+      "Name": "Lều vòm dựng nhanh Ozark Trail 6 người",
+      "Price": 3500000,
+      "OldPrice": 4800000,
+      "Cat": "leu",
+      "Images": [
+        "Images/sp1_1.jpg",
+        "Images/sp1_2.jpg",
+        "Images/sp1_3.jpg",
+        "Images/sp1_4.jpg"
+      ],
+      "Colors": [
+        "Xanh rêu",
+        "Cam",
+        "Xám"
+      ],
+      "Description": "Lều vòm dựng nhanh với khung gập sẵn, một người cũng dựng được trong vài phút. Có cửa lưới thoáng khí, cổng luồn dây điện tiện sạc thiết bị và túi lưới đựng đồ cá nhân bên trong.",
+      "Material": "Vải polyester chống thấm, khung sợi thủy tinh",
+      "Sizes": "Rộng 3,0 x 2,7 m, ngủ thoải mái 6 người",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp1_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 2,
+      "Name": "Quạt cắm trại Panergy có đèn LED",
+      "Price": 1800000,
+      "OldPrice": 0,
+      "Cat": "thiet-bi",
+      "Images": [
+        "Images/sp2_1.jpg",
+        "Images/sp2_2.jpg",
+        "Images/sp2_3.jpg",
+        "Images/sp2_4.jpg"
+      ],
+      "Colors": [
+        "Trắng",
+        "Đen"
+      ],
+      "Description": "Quạt sạc pin dung lượng lớn kèm đèn LED viền xung quanh, có móc treo trong lều. Nhiều tốc độ gió, dùng được cả ban ngày lẫn ban đêm.",
+      "Material": "Nhựa ABS, pin lithium sạc lại",
+      "Sizes": "Đường kính cánh quạt 20 cm",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp2_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 3,
+      "Name": "Ba lô Ozark Trail 20,5 lít",
+      "Price": 300000,
+      "OldPrice": 600000,
+      "Cat": "ba-lo",
+      "Images": [
+        "Images/sp3_1.jpg",
+        "Images/sp3_2.jpg",
+        "Images/sp3_3.jpg",
+        "Images/sp3_4.jpg"
+      ],
+      "Colors": [
+        "Xanh navy",
+        "Đen",
+        "Xám"
+      ],
+      "Description": "Ba lô dã ngoại 20,5 lít gọn nhẹ, dây rút chun phía trước để buộc thêm đồ, ngăn lưới hai bên đựng chai nước, quai đeo êm vai.",
+      "Material": "Vải polyester bền chống nước nhẹ",
+      "Sizes": "Dung tích 20,5 lít",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp3_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 4,
+      "Name": "Đèn pha đa màu Ozark Trail",
+      "Price": 130000,
+      "OldPrice": 180000,
+      "Cat": "den",
+      "Images": [
+        "Images/sp4_1.jpg",
+        "Images/sp4_2.jpg",
+        "Images/sp4_3.jpg",
+        "Images/sp4_4.jpg"
+      ],
+      "Colors": [
+        "Đen",
+        "Cam"
+      ],
+      "Description": "Đèn đeo đầu nhỏ gọn, nhiều chế độ sáng và nhiều màu ánh sáng. Dây đeo co giãn, chỉnh được góc chiếu, phù hợp đi bộ đêm, dựng lều và sửa chữa.",
+      "Material": "Nhựa ABS, dây đeo thun dệt",
+      "Sizes": "Free size, dùng 3 pin AAA",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp4_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 5,
+      "Name": "Đèn pin LED Ozark Trail 420",
+      "Price": 250000,
+      "OldPrice": 600000,
+      "Cat": "den",
+      "Images": [
+        "Images/sp5_1.jpg",
+        "Images/sp5_2.jpg",
+        "Images/sp5_3.jpg",
+        "Images/sp5_4.jpg"
+      ],
+      "Colors": [
+        "Đen",
+        "Bạc"
+      ],
+      "Description": "Đèn pin LED 420 lumen, vặn đầu để thu phóng chùm sáng. Thân nhôm chắc chắn, chống nước bắn, cầm gọn trong tay.",
+      "Material": "Nhôm hợp kim",
+      "Sizes": "Dài 14 cm, 420 lumen",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp5_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 6,
+      "Name": "Lều vòm cắm trại 3 người Alpha Camp",
+      "Price": 3800000,
+      "OldPrice": 0,
+      "Cat": "leu",
+      "Images": [
+        "Images/sp6_1.jpg",
+        "Images/sp6_2.jpg",
+        "Images/sp6_3.jpg",
+        "Images/sp6_4.jpg"
+      ],
+      "Colors": [
+        "Xanh lá",
+        "Cam"
+      ],
+      "Description": "Lều vòm 2 lớp cho 3 người, cửa sổ lưới thông gió, lớp ngoài chống nước. Gọn nhẹ, dễ dựng và dễ mang theo khi đi dã ngoại.",
+      "Material": "Vải polyester 190T chống thấm, khung sợi thủy tinh",
+      "Sizes": "Rộng 2,1 x 2,1 m, cho 3 người",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp6_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 7,
+      "Name": "Xe đạp leo núi 6 tốc độ",
+      "Price": 1800000,
+      "OldPrice": 0,
+      "Cat": "xe-dap",
+      "Images": [
+        "Images/sp7_1.jpg",
+        "Images/sp7_2.jpg",
+        "Images/sp7_3.jpg",
+        "Images/sp7_4.jpg"
+      ],
+      "Colors": [
+        "Đỏ",
+        "Xanh dương",
+        "Đen"
+      ],
+      "Description": "Xe đạp leo núi cỡ nhỏ 6 tốc độ, lốp địa hình bám đường tốt, khung thép chắc chắn. Phù hợp thiếu niên đạp quanh khu cắm trại hay đường đất.",
+      "Material": "Khung thép, lốp địa hình",
+      "Sizes": "Bánh 20 inch",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp7_1.jpg",
+      "InStock": true
+    },
+    {
+      "Id": 8,
+      "Name": "Xe đạp leo núi dành cho người lớn",
+      "Price": 4000000,
+      "OldPrice": 6000000,
+      "Cat": "xe-dap",
+      "Images": [
+        "Images/sp8_1.jpg",
+        "Images/sp8_2.jpg",
+        "Images/sp8_3.jpg",
+        "Images/sp8_4.jpg"
+      ],
+      "Colors": [
+        "Đen",
+        "Xám",
+        "Xanh dương"
+      ],
+      "Description": "Xe đạp leo núi người lớn với phuộc giảm xóc trước, phanh đĩa và bộ truyền động nhiều tốc độ. Chạy êm trên đường đồi dốc và đường mòn.",
+      "Material": "Khung hợp kim nhôm, phanh đĩa",
+      "Sizes": "Bánh 26 inch",
+      "Status": "Còn hàng",
+      "Thumb": "Images/sp8_1.jpg",
+      "InStock": true
+    }
+  ],
+  "Customers": [
+    {
+      "Id": 1,
+      "FullName": "Quản trị viên",
+      "Email": "admin@mycamp.vn",
+      "Username": "admin",
+      "PasswordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "Role": "admin",
+      "CreatedAt": "2026-10-28T13:31:34.7330597+07:00"
+    },
+    {
+      "Id": 2,
+      "FullName": "Nguyễn Văn A",
+      "Email": "a@gmail.com",
+      "Username": "a",
+      "PasswordHash": "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+      "Role": "customer",
+      "CreatedAt": "2026-10-28T13:32:15.0668786+07:00"
+    }
+  ],
+  "Reviews": [
+    {
+      "Id": 1,
+      "ProductId": 1,
+      "CustomerId": 0,
+      "AuthorName": "Minh Anh",
+      "Rating": 5,
+      "Comment": "Lều dựng rất nhanh, cả nhà 5 người nằm vẫn thoải mái. Chống mưa tốt.",
+      "CreatedAt": "2026-10-16T13:31:34.7330597+07:00"
+    },
+    {
+      "Id": 2,
+      "ProductId": 1,
+      "CustomerId": 0,
+      "AuthorName": "Quốc Huy",
+      "Rating": 4,
+      "Comment": "Chất liệu ổn, hơi nặng khi mang đi xa nhưng đáng tiền.",
+      "CreatedAt": "2026-10-22T13:31:34.7330597+07:00"
+    },
+    {
+      "Id": 3,
+      "ProductId": 3,
+      "CustomerId": 0,
+      "AuthorName": "Thu Hà",
+      "Rating": 5,
+      "Comment": "Ba lô nhẹ, nhiều ngăn tiện lợi, đi dã ngoại một ngày là vừa.",
+      "CreatedAt": "2026-10-19T13:31:34.7330597+07:00"
+    },
+    {
+      "Id": 4,
+      "ProductId": 5,
+      "CustomerId": 0,
+      "AuthorName": "Đức Thắng",
+      "Rating": 4,
+      "Comment": "Đèn sáng rõ, vặn thu phóng mượt. Pin dùng được khá lâu.",
+      "CreatedAt": "2026-10-25T13:31:34.7330597+07:00"
+    }
+  ],
+  "Orders": [
+    {
+      "Id": 1,
+      "CustomerId": 2,
+      "ReceiverName": "Nguyễn Văn A",
+      "Phone": "0912123456",
+      "Address": "HN",
+      "Note": "Giao nhanh",
+      "Status": "Chờ xử lý",
+      "CreatedAt": "2026-10-28T13:33:09.551535+07:00",
+      "Items": [
+        {
+          "ProductId": 1,
+          "ProductName": "Lều vòm dựng nhanh Ozark Trail 6 người",
+          "Color": "Xanh rêu",
+          "Image": "Images/sp1_1.jpg",
+          "Price": 3500000,
+          "Qty": 1,
+          "LineTotal": 3500000
+        },
+        {
+          "ProductId": 2,
+          "ProductName": "Quạt cắm trại Panergy có đèn LED",
+          "Color": "Trắng",
+          "Image": "Images/sp2_1.jpg",
+          "Price": 1800000,
+          "Qty": 1,
+          "LineTotal": 1800000
+        },
+        {
+          "ProductId": 3,
+          "ProductName": "Ba lô Ozark Trail 20,5 lít",
+          "Color": "Xám",
+          "Image": "Images/sp3_1.jpg",
+          "Price": 300000,
+          "Qty": 1,
+          "LineTotal": 300000
+        },
+        {
+          "ProductId": 8,
+          "ProductName": "Xe đạp leo núi dành cho người lớn",
+          "Color": "Xám",
+          "Image": "Images/sp8_1.jpg",
+          "Price": 4000000,
+          "Qty": 1,
+          "LineTotal": 4000000
+        }
+      ],
+      "Total": 9600000,
+      "TotalQty": 4
+    }
+  ],
+  "Messages": [],
+  "Articles": [
+    {
+      "Id": 1,
+      "Title": "5 mẹo chọn lều cắm trại phù hợp cho gia đình",
+      "Summary": "Số người, mùa đi và cách dựng là ba điều cần cân nhắc trước khi mua lều.",
+      "Content": "Trước hết hãy chọn lều theo số người thực tế rồi cộng thêm một chỗ. Lều ghi 6 người thường chỉ thoải mái cho 4 đến 5 người khi có thêm hành lý.\n\nTiếp theo là chất liệu và khả năng chống thấm. Vải polyester phủ lớp chống nước và khung sợi thủy tinh là lựa chọn phổ biến, nhẹ và đủ bền cho các chuyến đi cuối tuần.\n\nCuối cùng, ưu tiên lều có cửa lưới thoáng khí và khung dựng nhanh. Một chiếc lều dễ dựng giúp cả nhà tiết kiệm thời gian để tận hưởng chuyến đi.",
+      "Image": "Images/sp1_2.jpg",
+      "CreatedAt": "2026-10-26T13:31:34.7376017+07:00"
+    },
+    {
+      "Id": 2,
+      "Title": "Cách dựng lều vòm nhanh gọn trong 5 phút",
+      "Summary": "Chỉ với vài bước đơn giản, một người cũng có thể dựng xong lều vòm.",
+      "Content": "Chọn nền đất bằng phẳng, nhặt bỏ đá và cành khô, trải tấm lót chống ẩm trước khi dựng. Đặt cửa lều theo hướng khuất gió.\n\nLắp khung theo hai thanh chéo nhau, luồn vào các rãnh trên thân lều rồi nâng lên từng góc. Cố định bốn góc bằng cọc trước khi căng lớp áo mưa bên ngoài.\n\nCuối cùng kiểm tra dây giằng và độ căng của vải. Nếu trời có mưa, hãy căng thật chặt để nước không đọng trên mái.",
+      "Image": "Images/sp6_2.jpg",
+      "CreatedAt": "2026-10-23T13:31:34.7387143+07:00"
+    },
+    {
+      "Id": 3,
+      "Title": "Danh sách đồ cần mang cho chuyến cắm trại qua đêm",
+      "Summary": "Chuẩn bị đủ những món thiết yếu giúp chuyến đi nhẹ nhàng và an toàn hơn.",
+      "Content": "Nhóm đồ ngủ nghỉ gồm lều, túi ngủ, tấm lót và gối hơi. Đừng quên áo ấm vì nhiệt độ ban đêm ở vùng núi có thể giảm mạnh.\n\nNhóm chiếu sáng và tiện ích gồm đèn pin, đèn đội đầu, quạt mini và pin sạc dự phòng. Mang thêm túi rác để giữ khu cắm trại sạch sẽ.\n\nNgoài ra hãy mang nước uống, đồ ăn nhẹ và bộ sơ cứu cơ bản. Một chiếc ba lô nhiều ngăn sẽ giúp bạn sắp xếp mọi thứ gọn gàng.",
+      "Image": "Images/sp3_1.jpg",
+      "CreatedAt": "2026-10-19T13:31:34.7387143+07:00"
+    },
+    {
+      "Id": 4,
+      "Title": "Chọn đèn chiếu sáng nào cho chuyến dã ngoại?",
+      "Summary": "Đèn pin, đèn đội đầu hay đèn treo lều: mỗi loại phù hợp một nhu cầu riêng.",
+      "Content": "Đèn đội đầu giúp rảnh hai tay khi dựng lều, nấu ăn hoặc đi bộ đêm. Hãy chọn loại có nhiều chế độ sáng và dây đeo co giãn thoải mái.\n\nĐèn pin có thu phóng chùm sáng phù hợp để quan sát xa hoặc soi đường. Thân nhôm và khả năng chống nước bắn sẽ bền hơn khi dùng ngoài trời.\n\nVới không gian chung, một chiếc đèn treo trong lều cho ánh sáng dịu và đều. Nên mang thêm pin hoặc cục sạc dự phòng cho cả chuyến đi.",
+      "Image": "Images/sp5_1.jpg",
+      "CreatedAt": "2026-10-14T13:31:34.7387143+07:00"
+    },
+    {
+      "Id": 5,
+      "Title": "Kinh nghiệm chọn ba lô dã ngoại 20 đến 30 lít",
+      "Summary": "Dung tích, quai đeo và ngăn chứa quyết định ba lô có thoải mái hay không.",
+      "Content": "Chuyến đi trong ngày chỉ cần ba lô khoảng 20 lít, đủ cho nước uống, áo mưa, đồ ăn nhẹ và vài vật dụng cá nhân.\n\nQuai đeo êm vai và có dây ngực giúp phân bổ trọng lượng đều hơn. Lưng ba lô thoáng khí sẽ đỡ bí khi đi lâu dưới trời nóng.\n\nHãy ưu tiên chất liệu chống nước nhẹ và ngăn lưới hai bên để đựng chai nước. Những chi tiết nhỏ này rất tiện khi di chuyển.",
+      "Image": "Images/sp3_2.jpg",
+      "CreatedAt": "2026-10-08T13:31:34.7387143+07:00"
+    },
+    {
+      "Id": 6,
+      "Title": "Đạp xe địa hình: chuẩn bị gì trước khi lên đường?",
+      "Summary": "Kiểm tra xe, mang đủ nước và chọn cung đường vừa sức là ba điều nên làm.",
+      "Content": "Trước mỗi chuyến đi hãy kiểm tra phanh, lốp và xích. Bơm lốp đủ hơi và tra dầu xích giúp xe chạy êm và an toàn hơn trên đường đất.\n\nMang theo nước, đồ ăn nhẹ, bộ vá săm và bơm mini. Mũ bảo hiểm và găng tay là trang bị không nên bỏ qua.\n\nNếu mới bắt đầu, hãy chọn cung đường ngắn, ít dốc và đi cùng bạn bè. Tăng dần quãng đường khi đã quen với xe.",
+      "Image": "Images/sp8_1.jpg",
+      "CreatedAt": "2026-10-01T13:31:34.7387143+07:00"
+    }
+  ]
+}
