@@ -9,7 +9,7 @@ namespace Demo_btl_10_10
         /// <summary>Danh sách sản phẩm cần hiển thị (trang cha gán ở Page_Load).</summary>
         public IEnumerable<ShopProduct> Products { get; set; }
 
-        // Đổ dữ liệu sau khi các nút "Thêm" đã xử lý xong
+        // Đổ dữ liệu thẻ sản phẩm trước khi vẽ trang
         protected override void OnPreRender(EventArgs e)
         {
             base.OnPreRender(e);
@@ -17,7 +17,7 @@ namespace Demo_btl_10_10
             rptCards.DataBind();
         }
 
-        // Nút "Thêm" trên thẻ: thêm 1 sản phẩm (màu đầu tiên) vào giỏ rồi tải lại trang
+        // Nút "Thêm" trên thẻ: thêm 1 sản phẩm (màu đầu tiên) vào giỏ, báo thông báo rồi tải lại trang
         protected void rptCards_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (e.CommandName != "add") return;
@@ -27,7 +27,10 @@ namespace Demo_btl_10_10
 
             ShopProduct p = AppData.GetProduct(id);
             if (p != null && p.InStock)
+            {
                 ShopCart.Add(Session, p.Id, p.Colors.Count > 0 ? p.Colors[0] : string.Empty, 1);
+                ShopCart.Notify(Session, "Đã thêm vào giỏ hàng", true);
+            }
 
             Response.Redirect(Request.RawUrl);
         }

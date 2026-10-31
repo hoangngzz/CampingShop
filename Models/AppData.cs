@@ -32,9 +32,6 @@ namespace Demo_btl_10_10
         const string KNextReviewId = "MyShop.NextReviewId";
         const string KOrders = "MyShop.Orders";
         const string KNextOrderId = "MyShop.NextOrderId";
-        const string KArticles = "MyShop.Articles";
-        const string KMessages = "MyShop.Messages";
-        const string KNextMessageId = "MyShop.NextMessageId";
 
         public const string StatusPending = "Chờ xử lý";
         public const string StatusShipping = "Đang giao";
@@ -69,8 +66,6 @@ namespace Demo_btl_10_10
             public List<Customer> Customers { get; set; }
             public List<Review> Reviews { get; set; }
             public List<Order> Orders { get; set; }
-            public List<ContactMessage> Messages { get; set; }
-            public List<Article> Articles { get; set; }
         }
 
         static string DataPath
@@ -110,9 +105,7 @@ namespace Demo_btl_10_10
                     Products = (List<ShopProduct>)App[KProducts],
                     Customers = (List<Customer>)App[KCustomers],
                     Reviews = (List<Review>)App[KReviews],
-                    Orders = (List<Order>)App[KOrders],
-                    Messages = (List<ContactMessage>)App[KMessages],
-                    Articles = (List<Article>)App[KArticles]
+                    Orders = (List<Order>)App[KOrders]
                 };
 
                 string path = DataPath;
@@ -162,7 +155,6 @@ namespace Demo_btl_10_10
                     ? data.Customers : DefaultCustomers();
                 List<Review> reviews = data.Reviews ?? SeedReviews();
                 List<Order> orders = data.Orders ?? new List<Order>();
-                List<ContactMessage> messages = data.Messages ?? new List<ContactMessage>();
 
                 app[KProducts] = products;
                 app[KNextProductId] = (products.Count == 0 ? 0 : products.Max(p => p.Id)) + 1;
@@ -175,11 +167,6 @@ namespace Demo_btl_10_10
 
                 app[KOrders] = orders;
                 app[KNextOrderId] = (orders.Count == 0 ? 0 : orders.Max(o => o.Id)) + 1;
-
-                app[KMessages] = messages;
-                app[KNextMessageId] = (messages.Count == 0 ? 0 : messages.Max(m => m.Id)) + 1;
-
-                app[KArticles] = data.Articles ?? SeedArticles();
 
                 // Tạo file ngay lần chạy đầu để chắc chắn ghi được
                 Persist();
@@ -525,6 +512,18 @@ namespace Demo_btl_10_10
             return (List<Order>)App[KOrders];
         }
 
+        /// <summary>Đơn hàng của một tài khoản, mới nhất lên đầu (dùng cho trang theo dõi đơn hàng).</summary>
+        public static List<Order> GetOrdersByCustomer(int customerId)
+        {
+            App.Lock();
+            try
+            {
+                return OrderList().Where(o => o.CustomerId == customerId)
+                    .OrderByDescending(o => o.Id).Select(o => o.Clone()).ToList();
+            }
+            finally { App.UnLock(); }
+        }
+
         /// <summary>Tất cả đơn hàng, mới nhất lên đầu.</summary>
         public static List<Order> GetOrders()
         {
@@ -589,57 +588,6 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
-        // ===== Tin tức =====
-        /// <summary>Tất cả bài viết, mới nhất lên đầu.</summary>
-        public static List<Article> GetArticles()
-        {
-            App.Lock();
-            try { return ((List<Article>)App[KArticles]).OrderByDescending(a => a.CreatedAt).ToList(); }
-            finally { App.UnLock(); }
-        }
-
-        public static Article GetArticle(int id)
-        {
-            App.Lock();
-            try { return ((List<Article>)App[KArticles]).FirstOrDefault(a => a.Id == id); }
-            finally { App.UnLock(); }
-        }
-
-        // ===== Liên hệ =====
-        /// <summary>Lưu lời nhắn của khách và trả về mã lời nhắn.</summary>
-        public static int AddMessage(ContactMessage message)
-        {
-            App.Lock();
-            try
-            {
-                int next = (int)App[KNextMessageId];
-                App[KNextMessageId] = next + 1;
-
-                ContactMessage m = new ContactMessage
-                {
-                    Id = next,
-                    Name = message.Name,
-                    Email = message.Email,
-                    Phone = message.Phone,
-                    Subject = message.Subject,
-                    Message = message.Message,
-                    CreatedAt = DateTime.Now
-                };
-                ((List<ContactMessage>)App[KMessages]).Add(m);
-                Persist();
-                return next;
-            }
-            finally { App.UnLock(); }
-        }
-
-        /// <summary>Tất cả lời nhắn, mới nhất lên đầu.</summary>
-        public static List<ContactMessage> GetMessages()
-        {
-            App.Lock();
-            try { return ((List<ContactMessage>)App[KMessages]).OrderByDescending(m => m.Id).ToList(); }
-            finally { App.UnLock(); }
-        }
-
         // ===== Dữ liệu mẫu ban đầu =====
         static ShopProduct Seed(int id, string name, long price, long oldPrice, string cat,
             string[] images, string description, string material, string sizes, string status, string colors)
@@ -683,49 +631,6 @@ namespace Demo_btl_10_10
                 SeedReview(2, 1, "Quốc Huy", 4, "Chất liệu ổn, hơi nặng khi mang đi xa nhưng đáng tiền.", 6),
                 SeedReview(3, 3, "Thu Hà", 5, "Ba lô nhẹ, nhiều ngăn tiện lợi, đi dã ngoại một ngày là vừa.", 9),
                 SeedReview(4, 5, "Đức Thắng", 4, "Đèn sáng rõ, vặn thu phóng mượt. Pin dùng được khá lâu.", 3)
-            };
-        }
-
-        static List<Article> SeedArticles()
-        {
-            return new List<Article>
-            {
-                new Article
-                {
-                    Id = 1, Title = "5 mẹo chọn lều cắm trại phù hợp cho gia đình", Image = "Images/sp1_2.jpg", CreatedAt = DateTime.Now.AddDays(-2),
-                    Summary = "Số người, mùa đi và cách dựng là ba điều cần cân nhắc trước khi mua lều.",
-                    Content = "Trước hết hãy chọn lều theo số người thực tế rồi cộng thêm một chỗ. Lều ghi 6 người thường chỉ thoải mái cho 4 đến 5 người khi có thêm hành lý.\n\nTiếp theo là chất liệu và khả năng chống thấm. Vải polyester phủ lớp chống nước và khung sợi thủy tinh là lựa chọn phổ biến, nhẹ và đủ bền cho các chuyến đi cuối tuần.\n\nCuối cùng, ưu tiên lều có cửa lưới thoáng khí và khung dựng nhanh. Một chiếc lều dễ dựng giúp cả nhà tiết kiệm thời gian để tận hưởng chuyến đi."
-                },
-                new Article
-                {
-                    Id = 2, Title = "Cách dựng lều vòm nhanh gọn trong 5 phút", Image = "Images/sp6_2.jpg", CreatedAt = DateTime.Now.AddDays(-5),
-                    Summary = "Chỉ với vài bước đơn giản, một người cũng có thể dựng xong lều vòm.",
-                    Content = "Chọn nền đất bằng phẳng, nhặt bỏ đá và cành khô, trải tấm lót chống ẩm trước khi dựng. Đặt cửa lều theo hướng khuất gió.\n\nLắp khung theo hai thanh chéo nhau, luồn vào các rãnh trên thân lều rồi nâng lên từng góc. Cố định bốn góc bằng cọc trước khi căng lớp áo mưa bên ngoài.\n\nCuối cùng kiểm tra dây giằng và độ căng của vải. Nếu trời có mưa, hãy căng thật chặt để nước không đọng trên mái."
-                },
-                new Article
-                {
-                    Id = 3, Title = "Danh sách đồ cần mang cho chuyến cắm trại qua đêm", Image = "Images/sp3_1.jpg", CreatedAt = DateTime.Now.AddDays(-9),
-                    Summary = "Chuẩn bị đủ những món thiết yếu giúp chuyến đi nhẹ nhàng và an toàn hơn.",
-                    Content = "Nhóm đồ ngủ nghỉ gồm lều, túi ngủ, tấm lót và gối hơi. Đừng quên áo ấm vì nhiệt độ ban đêm ở vùng núi có thể giảm mạnh.\n\nNhóm chiếu sáng và tiện ích gồm đèn pin, đèn đội đầu, quạt mini và pin sạc dự phòng. Mang thêm túi rác để giữ khu cắm trại sạch sẽ.\n\nNgoài ra hãy mang nước uống, đồ ăn nhẹ và bộ sơ cứu cơ bản. Một chiếc ba lô nhiều ngăn sẽ giúp bạn sắp xếp mọi thứ gọn gàng."
-                },
-                new Article
-                {
-                    Id = 4, Title = "Chọn đèn chiếu sáng nào cho chuyến dã ngoại?", Image = "Images/sp5_1.jpg", CreatedAt = DateTime.Now.AddDays(-14),
-                    Summary = "Đèn pin, đèn đội đầu hay đèn treo lều: mỗi loại phù hợp một nhu cầu riêng.",
-                    Content = "Đèn đội đầu giúp rảnh hai tay khi dựng lều, nấu ăn hoặc đi bộ đêm. Hãy chọn loại có nhiều chế độ sáng và dây đeo co giãn thoải mái.\n\nĐèn pin có thu phóng chùm sáng phù hợp để quan sát xa hoặc soi đường. Thân nhôm và khả năng chống nước bắn sẽ bền hơn khi dùng ngoài trời.\n\nVới không gian chung, một chiếc đèn treo trong lều cho ánh sáng dịu và đều. Nên mang thêm pin hoặc cục sạc dự phòng cho cả chuyến đi."
-                },
-                new Article
-                {
-                    Id = 5, Title = "Kinh nghiệm chọn ba lô dã ngoại 20 đến 30 lít", Image = "Images/sp3_2.jpg", CreatedAt = DateTime.Now.AddDays(-20),
-                    Summary = "Dung tích, quai đeo và ngăn chứa quyết định ba lô có thoải mái hay không.",
-                    Content = "Chuyến đi trong ngày chỉ cần ba lô khoảng 20 lít, đủ cho nước uống, áo mưa, đồ ăn nhẹ và vài vật dụng cá nhân.\n\nQuai đeo êm vai và có dây ngực giúp phân bổ trọng lượng đều hơn. Lưng ba lô thoáng khí sẽ đỡ bí khi đi lâu dưới trời nóng.\n\nHãy ưu tiên chất liệu chống nước nhẹ và ngăn lưới hai bên để đựng chai nước. Những chi tiết nhỏ này rất tiện khi di chuyển."
-                },
-                new Article
-                {
-                    Id = 6, Title = "Đạp xe địa hình: chuẩn bị gì trước khi lên đường?", Image = "Images/sp8_1.jpg", CreatedAt = DateTime.Now.AddDays(-27),
-                    Summary = "Kiểm tra xe, mang đủ nước và chọn cung đường vừa sức là ba điều nên làm.",
-                    Content = "Trước mỗi chuyến đi hãy kiểm tra phanh, lốp và xích. Bơm lốp đủ hơi và tra dầu xích giúp xe chạy êm và an toàn hơn trên đường đất.\n\nMang theo nước, đồ ăn nhẹ, bộ vá săm và bơm mini. Mũ bảo hiểm và găng tay là trang bị không nên bỏ qua.\n\nNếu mới bắt đầu, hãy chọn cung đường ngắn, ít dốc và đi cùng bạn bè. Tăng dần quãng đường khi đã quen với xe."
-                }
             };
         }
 

@@ -27,9 +27,19 @@ namespace Demo_btl_10_10
             get { return Convert.ToString(HttpContext.Current.Session["FullName"]); }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
-        {
+        // Thông báo do ShopCart.Notify ghi vào Session: đọc ra, hiện giữa màn hình một lần rồi xóa đi.
+        protected string NoticeText;
+        protected bool NoticeOk = true;
 
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            NoticeText = Session["MyShop.Notice"] as string;
+            if (NoticeText != null)
+            {
+                NoticeOk = !(Session["MyShop.NoticeOk"] is bool) || (bool)Session["MyShop.NoticeOk"];
+                Session.Remove("MyShop.Notice");
+                Session.Remove("MyShop.NoticeOk");
+            }
         }
     }
 }

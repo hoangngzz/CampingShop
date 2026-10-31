@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#346c43" />
     <title>MyCamp</title>
-    <link href="Content/Site.css?v=2" rel="stylesheet" type="text/css" />
+    <link href="Content/Site.css?v=3" rel="stylesheet" type="text/css" />
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
@@ -41,7 +41,7 @@
                     <div class="topbar-links">
                         <% if (IsLoggedIn) { %>
                         <span class="hello"><svg class="ico"><use href="#i-user" /></svg>Xin chào, <%: DisplayName %></span>
-                        <% if (IsAdmin) { %><a class="topbar-btn topbar-btn-ghost" href="Admin.aspx">Quản trị</a><% } %>
+                        <% if (IsAdmin) { %><a class="topbar-btn topbar-btn-ghost" href="Admin.aspx">Quản trị</a><% } else { %><a class="topbar-btn topbar-btn-ghost" href="Orders.aspx">Đơn hàng của tôi</a><% } %>
                         <a class="topbar-btn topbar-btn-ghost" href="Login.aspx?logout=1">Đăng xuất</a>
                         <% } else { %>
                         <a class="topbar-btn topbar-btn-ghost" href="SignUp.aspx">Đăng ký</a>
@@ -87,7 +87,7 @@
                                 <% if (IsLoggedIn) { %>
                                 <strong>Xin chào, <%: DisplayName %></strong>
                                 <div class="drawer-auth">
-                                    <% if (IsAdmin) { %><a href="Admin.aspx">Quản trị</a><% } %>
+                                    <% if (IsAdmin) { %><a href="Admin.aspx">Quản trị</a><% } else { %><a href="Orders.aspx">Đơn hàng của tôi</a><% } %>
                                     <a href="Login.aspx?logout=1">Đăng xuất</a>
                                 </div>
                                 <% } else { %>
@@ -122,8 +122,6 @@
                                 </div>
                             </li>
 
-                            <li class="nav-item"><a class="nav-link" href="Contact.aspx">Liên hệ</a></li>
-                            <li class="nav-item"><a class="nav-link" href="News.aspx">Tin tức</a></li>
                         </ul>
                     </div>
 
@@ -170,8 +168,7 @@
                         <% } %>
                         <li><a href="Cart.aspx">Giỏ hàng</a></li>
                         <li><a href="Products.aspx">Tất cả sản phẩm</a></li>
-                        <li><a href="News.aspx">Tin tức</a></li>
-                        <li><a href="Contact.aspx">Liên hệ</a></li>
+                        <% if (!IsAdmin) { %><li><a href="Orders.aspx">Theo dõi đơn hàng</a></li><% } %>
                     </ul>
                 </div>
 
@@ -192,6 +189,10 @@
         </footer>
     </form>
 
-    <script src="Content/header.js?v=2"></script>
+    <% if (NoticeText != null) { %>
+    <div class="mc-toast show<%= NoticeOk ? "" : " err" %>" id="mcToast" role="status"><%: NoticeText %></div>
+    <% } %>
+
+    <script src="Content/header.js?v=4"></script>
 </body>
 </html>

@@ -42,15 +42,6 @@ namespace Demo_btl_10_10
         protected global::System.Web.UI.WebControls.HyperLink tabOrders;
 
         /// <summary>
-        /// tabMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink tabMessages;
-
-        /// <summary>
         /// pnlProducts control.
         /// </summary>
         /// <remarks>
@@ -249,15 +240,6 @@ namespace Demo_btl_10_10
         protected global::System.Web.UI.WebControls.Literal litCustomerCount;
 
         /// <summary>
-        /// btnNewCustomer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnNewCustomer;
-
-        /// <summary>
         /// lblCustomerMsg control.
         /// </summary>
         /// <remarks>
@@ -446,40 +428,5 @@ namespace Demo_btl_10_10
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNoOrders;
 
-        /// <summary>
-        /// pnlMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlMessages;
-
-        /// <summary>
-        /// litMessageCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litMessageCount;
-
-        /// <summary>
-        /// rptMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptMessages;
-
-        /// <summary>
-        /// pnlNoMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlNoMessages;
     }
 }

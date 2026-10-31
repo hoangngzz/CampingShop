@@ -9,7 +9,6 @@
             <asp:HyperLink ID="tabProducts" runat="server" NavigateUrl="~/Admin.aspx?tab=sp" CssClass="admin-tab active">Sản phẩm</asp:HyperLink>
             <asp:HyperLink ID="tabCustomers" runat="server" NavigateUrl="~/Admin.aspx?tab=kh" CssClass="admin-tab">Tài khoản</asp:HyperLink>
             <asp:HyperLink ID="tabOrders" runat="server" NavigateUrl="~/Admin.aspx?tab=dh" CssClass="admin-tab">Đơn hàng</asp:HyperLink>
-            <asp:HyperLink ID="tabMessages" runat="server" NavigateUrl="~/Admin.aspx?tab=lh" CssClass="admin-tab">Liên hệ</asp:HyperLink>
         </div>
 
         <%-- ================= SẢN PHẨM ================= --%>
@@ -126,7 +125,6 @@
 
             <div class="admin-bar">
                 <h2>Danh sách tài khoản (<asp:Literal ID="litCustomerCount" runat="server" />)</h2>
-                <asp:Button ID="btnNewCustomer" runat="server" Text="+ Thêm tài khoản" CssClass="btn" OnClick="btnNewCustomer_Click" />
             </div>
 
             <asp:Label ID="lblCustomerMsg" runat="server" EnableViewState="false" />
@@ -159,7 +157,7 @@
                     <div class="field full">
                         <label for="<%= txtCPass.ClientID %>">Mật khẩu</label>
                         <asp:TextBox ID="txtCPass" runat="server" CssClass="input" TextMode="Password" MaxLength="128" autocomplete="new-password" />
-                        <span class="hint">Tối thiểu 8 ký tự. Khi sửa, để trống nếu không muốn đổi mật khẩu.</span>
+                        <span class="hint">Tối thiểu 8 ký tự. Để trống nếu không muốn đổi mật khẩu.</span>
                     </div>
                 </div>
 
@@ -307,46 +305,6 @@
                     </tbody>
                 </table>
                 <asp:Panel ID="pnlNoOrders" runat="server" CssClass="no-result" Visible="false">Chưa có đơn hàng nào.</asp:Panel>
-            </div>
-        </asp:Panel>
-
-        <%-- ================= LIÊN HỆ ================= --%>
-        <asp:Panel ID="pnlMessages" runat="server">
-
-            <div class="admin-bar">
-                <h2>Lời nhắn từ khách (<asp:Literal ID="litMessageCount" runat="server" />)</h2>
-            </div>
-
-            <div class="table-scroll">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Ngày gửi</th>
-                            <th>Họ tên</th>
-                            <th>Email</th>
-                            <th>Điện thoại</th>
-                            <th>Chủ đề</th>
-                            <th>Nội dung</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <asp:Repeater ID="rptMessages" runat="server">
-                            <ItemTemplate>
-                                <tr>
-                                    <td><%# Eval("Id") %></td>
-                                    <td><%# ((DateTime)Eval("CreatedAt")).ToString("dd/MM/yyyy HH:mm") %></td>
-                                    <td><%#: Eval("Name") %></td>
-                                    <td><a class="link-btn" href='mailto:<%#: Eval("Email") %>'><%#: Eval("Email") %></a></td>
-                                    <td><%#: Eval("Phone") %></td>
-                                    <td><%#: Eval("Subject") %></td>
-                                    <td class="message-cell"><%#: Eval("Message") %></td>
-                                </tr>
-                            </ItemTemplate>
-                        </asp:Repeater>
-                    </tbody>
-                </table>
-                <asp:Panel ID="pnlNoMessages" runat="server" CssClass="no-result" Visible="false">Chưa có lời nhắn nào.</asp:Panel>
             </div>
         </asp:Panel>
     </div>

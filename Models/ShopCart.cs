@@ -23,6 +23,13 @@ namespace Demo_btl_10_10
         const string Key = "MyShop.Cart";
         public const int MaxQty = 99;
 
+        /// <summary>Thông báo ngắn (hiện giữa màn hình một lần ở Site.Master) sau khi trang chuyển hướng.</summary>
+        public static void Notify(HttpSessionState session, string text, bool ok)
+        {
+            session["MyShop.Notice"] = text;
+            session["MyShop.NoticeOk"] = ok;
+        }
+
         public static List<CartItem> Get(HttpSessionState session)
         {
             List<CartItem> cart = session[Key] as List<CartItem>;

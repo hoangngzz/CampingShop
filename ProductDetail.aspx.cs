@@ -136,6 +136,7 @@ namespace Demo_btl_10_10
             }
 
             ShopCart.Add(Session, Product.Id, color, qty);
+            ShopCart.Notify(Session, "Đã thêm vào giỏ hàng", true);
             Response.Redirect("ProductDetail.aspx?id=" + Product.Id + "&added=1");
         }
 

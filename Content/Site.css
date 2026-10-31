@@ -2277,3 +2277,162 @@ a {
         padding: 8px 12px;
     }
 }
+
+/* ===== THÔNG BÁO THÊM VÀO GIỎ (giữa màn hình) ===== */
+.mc-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100vw - 40px);
+    padding: 14px 22px;
+    border-radius: 10px;
+    background-color: rgba(30, 30, 30, 0.92);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -46%);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+    .mc-toast::before {
+        content: "✓";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: var(--xanh-phu);
+        color: #fff;
+        font-size: 15px;
+    }
+
+    .mc-toast.err::before {
+        content: "!";
+        background-color: #d9534f;
+    }
+
+    .mc-toast.show {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+/* ===== TRANG THEO DÕI ĐƠN HÀNG ===== */
+.my-order {
+    margin-bottom: 16px;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.my-order-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    padding: 14px 18px;
+    background-color: var(--nen-xanh);
+    cursor: pointer;
+}
+
+.my-order-id {
+    font-weight: 700;
+    color: var(--xanh-chinh);
+}
+
+.my-order-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.my-order-sum {
+    margin-left: auto;
+    font-size: 14px;
+}
+
+.my-order-body {
+    padding: 18px;
+}
+
+.my-order-items {
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+    .my-order-items li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .my-order-items img {
+        width: 64px;
+        height: 64px;
+        flex: none;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+.my-order-item-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .my-order-item-info a {
+        font-weight: 600;
+    }
+
+        .my-order-item-info a:hover {
+            color: var(--xanh-chinh);
+        }
+
+    .my-order-item-info small {
+        color: #666;
+    }
+
+.my-order-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 14px;
+    font-size: 14px;
+}
+
+.my-order-ship div {
+    margin-bottom: 4px;
+}
+
+.my-order-ship span {
+    color: #666;
+}
+
+.my-order-total {
+    font-size: 16px;
+}
+
+    .my-order-total strong {
+        color: var(--xanh-chinh);
+        font-size: 18px;
+    }
+
+@media (max-width: 600px) {
+    .my-order-sum {
+        margin-left: 0;
+        width: 100%;
+    }
+}

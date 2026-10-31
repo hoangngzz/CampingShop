@@ -37,6 +37,11 @@
             if (e.key === 'Escape') setSortOpen(false);
         });
     }
+    // ===== Thông báo giữa màn hình (do server hiện sau khi thêm vào giỏ): tự ẩn sau ~2 giây =====
+    var toast = document.getElementById('mcToast');
+    if (toast) {
+        setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    }
     var body = document.body;
     var nav = document.getElementById('mainNav');
     var toggle = document.getElementById('navToggle');

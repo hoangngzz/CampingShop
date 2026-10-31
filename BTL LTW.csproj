@@ -70,7 +70,6 @@
     <Content Include="Admin.aspx" />
     <Content Include="Cart.aspx" />
     <Content Include="Controls\ProductCards.ascx" />
-    <Content Include="Contact.aspx" />
     <Content Include="Content\header.js" />
     <Content Include="Content\Site.css" />
     <Content Include="default.aspx" />
@@ -110,7 +109,7 @@
     <Content Include="Images\sp8_3.jpg" />
     <Content Include="Images\sp8_4.jpg" />
     <Content Include="Login.aspx" />
-    <Content Include="News.aspx" />
+    <Content Include="Orders.aspx" />
     <Content Include="ProductDetail.aspx" />
     <Content Include="Products.aspx" />
     <Content Include="SignUp.aspx" />
@@ -130,13 +129,6 @@
     </Compile>
     <Compile Include="Cart.aspx.designer.cs">
       <DependentUpon>Cart.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Contact.aspx.cs">
-      <DependentUpon>Contact.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Contact.aspx.designer.cs">
-      <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProductCards.ascx.cs">
       <DependentUpon>ProductCards.ascx</DependentUpon>
@@ -162,12 +154,12 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
-    <Compile Include="News.aspx.cs">
-      <DependentUpon>News.aspx</DependentUpon>
+    <Compile Include="Orders.aspx.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="News.aspx.designer.cs">
-      <DependentUpon>News.aspx</DependentUpon>
+    <Compile Include="Orders.aspx.designer.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
     </Compile>
     <Compile Include="ProductDetail.aspx.cs">
       <DependentUpon>ProductDetail.aspx</DependentUpon>
@@ -184,8 +176,6 @@
       <DependentUpon>Products.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\AppData.cs" />
-    <Compile Include="Models\Article.cs" />
-    <Compile Include="Models\ContactMessage.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Review.cs" />

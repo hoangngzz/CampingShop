@@ -20,7 +20,7 @@ namespace Demo_btl_10_10
             get
             {
                 string tab = (Request.QueryString["tab"] ?? "").ToLowerInvariant();
-                return tab == "kh" || tab == "dh" || tab == "lh" ? tab : "sp";
+                return tab == "kh" || tab == "dh" ? tab : "sp";
             }
         }
 
@@ -50,21 +50,11 @@ namespace Demo_btl_10_10
             pnlProducts.Visible = tab == "sp";
             pnlCustomers.Visible = tab == "kh";
             pnlOrders.Visible = tab == "dh";
-            pnlMessages.Visible = tab == "lh";
             tabProducts.CssClass = tab == "sp" ? "admin-tab active" : "admin-tab";
             tabCustomers.CssClass = tab == "kh" ? "admin-tab active" : "admin-tab";
             tabOrders.CssClass = tab == "dh" ? "admin-tab active" : "admin-tab";
-            tabMessages.CssClass = tab == "lh" ? "admin-tab active" : "admin-tab";
 
-            if (tab == "lh")
-            {
-                List<ContactMessage> messages = AppData.GetMessages();
-                litMessageCount.Text = messages.Count.ToString();
-                rptMessages.DataSource = messages;
-                rptMessages.DataBind();
-                pnlNoMessages.Visible = messages.Count == 0;
-            }
-            else if (tab == "dh")
+            if (tab == "dh")
             {
                 BindOrders();
             }
@@ -343,22 +333,6 @@ namespace Demo_btl_10_10
         }
 
         // ================= KHÁCH HÀNG =================
-        private void ClearCustomerForm()
-        {
-            hfCustomerId.Value = "0";
-            txtCName.Text = "";
-            txtCEmail.Text = "";
-            txtCUser.Text = "";
-            ddlCRole.ClearSelection();
-        }
-
-        protected void btnNewCustomer_Click(object sender, EventArgs e)
-        {
-            ClearCustomerForm();
-            litCustomerFormTitle.Text = "Thêm tài khoản mới";
-            pnlCustomerForm.Visible = true;
-        }
-
         protected void btnCancelCustomer_Click(object sender, EventArgs e)
         {
             pnlCustomerForm.Visible = false;
@@ -416,6 +390,14 @@ namespace Demo_btl_10_10
             int id;
             int.TryParse(hfCustomerId.Value, out id);
 
+            // Admin chỉ sửa / xóa tài khoản, không thêm thành viên mới (thành viên tự đăng ký ở SignUp.aspx)
+            if (id <= 0)
+            {
+                Show(lblCustomerMsg, "Quản trị viên không thể thêm tài khoản mới.", false);
+                pnlCustomerForm.Visible = false;
+                return;
+            }
+
             if (fullName.Length == 0)
             {
                 Show(lblCustomerMsg, "Vui lòng nhập họ và tên.", false);
@@ -431,7 +413,7 @@ namespace Demo_btl_10_10
                 Show(lblCustomerMsg, "Tên đăng nhập phải từ 3 ký tự và không chứa khoảng trắng.", false);
                 return;
             }
-            if ((id == 0 || password.Length > 0) && password.Length < 8)
+            if (password.Length > 0 && password.Length < 8)
             {
                 Show(lblCustomerMsg, "Mật khẩu phải có ít nhất 8 ký tự.", false);
                 return;
@@ -447,9 +429,7 @@ namespace Demo_btl_10_10
             };
 
             string error;
-            bool ok = id == 0
-                ? AppData.AddCustomer(c, password, out error)
-                : AppData.UpdateCustomer(c, password, out error);
+            bool ok = AppData.UpdateCustomer(c, password, out error);
 
             if (!ok)
             {
@@ -458,7 +438,7 @@ namespace Demo_btl_10_10
             }
 
             // Admin sửa chính tài khoản của mình -> cập nhật lại phiên đăng nhập
-            if (id != 0 && id == Convert.ToInt32(Session["UserId"]))
+            if (id == Convert.ToInt32(Session["UserId"]))
             {
                 Session["User"] = c.Username;
                 Session["FullName"] = c.FullName;
@@ -471,7 +451,7 @@ namespace Demo_btl_10_10
             }
 
             pnlCustomerForm.Visible = false;
-            Show(lblCustomerMsg, id > 0 ? "Đã cập nhật tài khoản." : "Đã thêm tài khoản mới.", true);
+            Show(lblCustomerMsg, "Đã cập nhật tài khoản.", true);
         }
     }
 }
