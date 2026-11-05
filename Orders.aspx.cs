@@ -10,6 +10,8 @@ namespace Demo_btl_10_10
         protected List<Order> Items = new List<Order>();
         protected int OpenId;   // đơn được mở sẵn (Orders.aspx?id=...), mặc định là đơn mới nhất
 
+        // Bảo đảm người dùng đã đăng nhập và không phải admin, lấy các đơn thuộc tài khoản hiện tại,
+        // đồng thời xác định đơn cần mở từ query string hoặc mặc định chọn đơn mới nhất.
         protected void Page_Load(object sender, EventArgs e)
         {
             // Phải đăng nhập mới xem được đơn của mình
@@ -32,11 +34,14 @@ namespace Demo_btl_10_10
             if (OpenId == 0 && Items.Count > 0) OpenId = Items[0].Id;
         }
 
+        // Chuyển số tiền nguyên sang chuỗi tiền Việt Nam dùng trong các biểu thức binding của trang.
         protected string Money(long value)
         {
             return AppData.Money(value);
         }
 
+        // Chuyển trạng thái nghiệp vụ của đơn hàng thành CSS class tương ứng để giao diện dùng
+        // màu sắc khác nhau cho chờ xử lý, đang giao, đã hủy và trạng thái mặc định.
         protected string StatusCss(string status)
         {
             switch (status)
@@ -48,6 +53,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Tạo đoạn HTML an toàn để hiển thị màu sản phẩm; trả về chuỗi rỗng khi đơn không có màu
+        // và mã hóa nội dung trước khi ghép vào HTML để tránh chèn markup không mong muốn.
         protected string ColorHtml(string color)
         {
             return string.IsNullOrEmpty(color) ? string.Empty : "<small class=\"cart-color\">Màu: " + Server.HtmlEncode(color) + "</small>";

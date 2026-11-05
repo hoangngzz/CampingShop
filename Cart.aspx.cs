@@ -18,10 +18,15 @@ namespace Demo_btl_10_10
             public long Price { get; set; }
             public int Qty { get; set; }
             public bool InStock { get; set; }
+            // Tính tổng tiền của một dòng bằng đơn giá nhân số lượng hiện tại của dòng đó.
             public long LineTotal { get { return Price * Qty; } }
+            // Tạo khóa duy nhất gồm ID sản phẩm và màu đã chọn để các nút trong repeater
+            // có thể gửi đúng biến thể sản phẩm qua CommandArgument.
             public string Key { get { return ProductId + "|" + Color; } }   // dùng làm CommandArgument
         }
 
+        // Ở lần tải đầu tiên, điền tên người nhận từ Session để khách đã đăng nhập không phải
+        // nhập lại thông tin; các lần postback giữ nguyên dữ liệu người dùng đang điền.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -31,7 +36,8 @@ namespace Demo_btl_10_10
             }
         }
 
-        // Đổ dữ liệu sau khi các nút +/−/× đã xử lý xong
+        // Sau khi các lệnh thêm, bớt hoặc xóa đã xử lý, dựng lại danh sách dòng hàng, điều khiển
+        // vùng rỗng/đã có hàng/đặt hàng thành công, binding repeater và cập nhật tổng tiền.
         protected void Page_PreRender(object sender, EventArgs e)
         {
             int doneId;
@@ -53,7 +59,8 @@ namespace Demo_btl_10_10
             litTotal.Text = Server.HtmlEncode(AppData.Money(sum));
         }
 
-        // Ghép giỏ hàng (Session) với dữ liệu sản phẩm (Application). Sản phẩm đã bị xóa thì bỏ khỏi giỏ.
+        // Ghép các CartItem trong Session với bản sao sản phẩm mới nhất từ Application để lấy tên,
+        // ảnh, giá và tình trạng hàng; đồng thời loại các dòng trỏ tới sản phẩm đã bị xóa.
         private List<CartLine> BuildLines()
         {
             List<CartItem> cart = ShopCart.Get(Session);
@@ -81,18 +88,22 @@ namespace Demo_btl_10_10
             return lines;
         }
 
-        // ===== Hàm hỗ trợ cho giao diện =====
+        // Chuyển giá trị binding thành chuỗi tiền Việt Nam dùng trong tổng tiền và giá từng dòng.
         protected string Money(object value)
         {
             return AppData.Money(Convert.ToInt64(value));
         }
 
+        // Tạo HTML hiển thị màu đã chọn sau khi mã hóa giá trị; không tạo markup nếu sản phẩm
+        // không có màu hoặc màu đang rỗng.
         protected string ColorHtml(object color)
         {
             string c = Convert.ToString(color);
             return c.Length == 0 ? string.Empty : "<small class=\"cart-color\">Màu: " + Server.HtmlEncode(c) + "</small>";
         }
 
+        // Phân tích CommandArgument theo định dạng productId|color; trả về ID 0 và màu rỗng
+        // khi khóa không có dấu phân cách hoặc ID không chuyển đổi được.
         private static void ParseKey(string key, out int productId, out string color)
         {
             int i = key.IndexOf('|');
@@ -103,6 +114,8 @@ namespace Demo_btl_10_10
             color = key.Substring(i + 1);
         }
 
+        // Xử lý các nút tăng, giảm và xóa trên một dòng giỏ hàng, gọi ShopCart thay đổi Session
+        // tương ứng rồi chuyển hướng về giỏ để hiển thị dữ liệu mới nhất.
         protected void rptCart_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int productId;
@@ -117,13 +130,15 @@ namespace Demo_btl_10_10
             Response.Redirect("Cart.aspx");
         }
 
-        // ===== Đặt hàng: ghi đơn vào Application =====
+        // Ghi thông báo lỗi đặt hàng vào Label sau khi mã hóa nội dung và gán CSS lỗi cho giao diện.
         private void ShowCheckout(string text)
         {
             lblCheckoutMsg.Text = Server.HtmlEncode(text);
             lblCheckoutMsg.CssClass = "admin-msg err";
         }
 
+        // Kiểm tra giỏ, thông tin người nhận, số điện thoại, địa chỉ và tình trạng tồn kho; nếu hợp lệ
+        // thì chuyển các dòng giỏ thành Order, lưu đơn vào Application, xóa giỏ và mở màn hình thành công.
         protected void btnCheckout_Click(object sender, EventArgs e)
         {
             List<CartLine> lines = BuildLines();

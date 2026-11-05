@@ -13,9 +13,12 @@ namespace Demo_btl_10_10
         public string Role { get; set; }            // "admin" hoặc "customer"
         public DateTime CreatedAt { get; set; }
 
+        // Tạo một bản sao nông của tài khoản để mã gọi bên ngoài có thể đọc/chỉnh sửa bản sao
+        // mà không tác động trực tiếp tới đối tượng Customer đang được lưu trong Application.
         public Customer Clone()
         {
-            return (Customer)MemberwiseClone();
+            return (Customer)MemberwiseClone();     // sao chép từng trường sang một đối tượng mới (sao chép nông),
+                                                    // AppData luôn trả về bản sao, nên trang nào lấy tài khoản ra sửa cũng không làm hỏng dữ liệu gốc dùng chung.
         }
     }
 }

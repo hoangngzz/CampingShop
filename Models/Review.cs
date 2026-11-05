@@ -13,6 +13,7 @@ namespace Demo_btl_10_10
         public string Comment { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        // Tạo bản sao của đánh giá trước khi trả dữ liệu ra ngoài vùng Application dùng chung.
         public Review Clone()
         {
             return (Review)MemberwiseClone();

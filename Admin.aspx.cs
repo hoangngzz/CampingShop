@@ -24,6 +24,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Kiểm tra quyền admin trước khi cho phép truy cập; ở lần tải đầu tiên nạp danh mục sản phẩm
+        // và các trạng thái đơn vào dropdown để các biểu mẫu quản trị sử dụng.
         protected void Page_Load(object sender, EventArgs e)
         {
             // Chỉ admin mới được vào trang này
@@ -43,7 +45,8 @@ namespace Demo_btl_10_10
             }
         }
 
-        // Đổ dữ liệu sau khi các nút đã xử lý xong, để bảng luôn hiện dữ liệu mới nhất trong Application
+        // Xác định tab hiện tại, bật đúng panel và trạng thái tab, sau đó binding lại dữ liệu tương ứng
+        // sau khi event handler đã chạy để danh sách sản phẩm, khách hàng hoặc đơn hàng luôn mới nhất.
         protected void Page_PreRender(object sender, EventArgs e)
         {
             string tab = CurrentTab;
@@ -75,6 +78,8 @@ namespace Demo_btl_10_10
         }
 
         // ===== Đơn hàng =====
+        // Lấy danh sách đơn, binding bảng và xử lý đơn được chọn từ query string; nếu có đơn thì
+        // binding các dòng hàng và chọn trạng thái hiện tại, nếu không thì hiển thị thông báo phù hợp.
         private void BindOrders()
         {
             List<Order> orders = AppData.GetOrders();
@@ -98,6 +103,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Đọc ID đơn từ URL, xác nhận trạng thái được chọn thông qua AppData và hiển thị kết quả
+        // cập nhật cho admin; trường hợp ID hoặc trạng thái không hợp lệ sẽ không ghi dữ liệu.
         protected void btnUpdateStatus_Click(object sender, EventArgs e)
         {
             int id;
@@ -110,11 +117,13 @@ namespace Demo_btl_10_10
                 Show(lblOrderMsg, error, false);
         }
 
+        // Chuyển giá trị binding sang chuỗi tiền Việt Nam dùng trong bảng chi tiết đơn hàng.
         protected string OrderMoney(object value)
         {
             return AppData.Money(Convert.ToInt64(value));
         }
 
+        // Ánh xạ trạng thái đơn hàng sang CSS class để badge trên trang quản trị có màu phù hợp.
         protected string StatusCss(object status)
         {
             switch (Convert.ToString(status))
@@ -126,6 +135,7 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Tạo nhãn tài khoản của đơn: khách vãng lai, tài khoản đã xóa hoặc username kèm họ tên.
         protected string CustomerLabel(Order order)
         {
             if (order.CustomerId <= 0) return "Khách chưa đăng nhập";
@@ -133,13 +143,16 @@ namespace Demo_btl_10_10
             return c == null ? "Tài khoản đã xóa" : c.Username + " (" + c.FullName + ")";
         }
 
+        // Tạo HTML màu sản phẩm đã mã hóa để hiển thị trong dòng đơn; màu rỗng thì không tạo HTML.
         protected string ColorHtml(object color)
         {
             string c = Convert.ToString(color);
             return string.IsNullOrEmpty(c) ? string.Empty : "<span class=\"order-item-color\">Màu: " + Server.HtmlEncode(c) + "</span>";
         }
 
-        /// <summary>Tối đa 3 ảnh nhỏ của các sản phẩm trong đơn, dư thì ghi "+N".</summary>
+        /// <summary>Tạo vùng thumbnail cho tối đa ba sản phẩm trong đơn.</summary>
+        /// <remarks>Các thuộc tính đường dẫn và tên được HTML-encode; nếu còn sản phẩm ngoài ba ảnh
+        /// đầu tiên thì thêm nhãn số lượng còn lại.</remarks>
         protected string Thumbs(object dataItem)
         {
             Order order = (Order)dataItem;
@@ -155,12 +168,14 @@ namespace Demo_btl_10_10
         }
 
         // ===== Hàm hỗ trợ cho giao diện =====
+        // Định dạng số tiền dương theo văn hóa Việt Nam; giá trị 0 hoặc âm được biểu diễn bằng chuỗi rỗng.
         protected string Money(object value)
         {
             long n = Convert.ToInt64(value);
             return n > 0 ? n.ToString("N0", new CultureInfo("vi-VN")) + "đ" : "";
         }
 
+        // Tra mã danh mục trong bảng Categories và trả về tên hiển thị; nếu mã chưa biết thì giữ nguyên mã.
         protected string CatName(object cat)
         {
             string key = Convert.ToString(cat);
@@ -168,22 +183,26 @@ namespace Demo_btl_10_10
             return AppData.Categories.TryGetValue(key, out name) ? name : key;
         }
 
+        // Chuyển role lưu trong dữ liệu thành nhãn tiếng Việt dùng ở danh sách tài khoản quản trị.
         protected string RoleName(object role)
         {
             return Convert.ToString(role) == AppData.RoleAdmin ? "Quản trị viên" : "Khách hàng";
         }
 
+        // Chuyển role thành CSS class cho badge admin hoặc badge người dùng thông thường.
         protected string RoleCss(object role)
         {
             return Convert.ToString(role) == AppData.RoleAdmin ? "tag admin" : "tag";
         }
 
+        // Ghi nội dung đã mã hóa vào Label và chọn CSS class thành công/lỗi cho các biểu mẫu quản trị.
         private void Show(Label label, string text, bool ok)
         {
             label.Text = Server.HtmlEncode(text);
             label.CssClass = ok ? "admin-msg ok" : "admin-msg err";
         }
 
+        // Chọn item trong DropDownList theo value; nếu không tồn tại thì giữ nguyên lựa chọn hiện tại.
         private static void Select(DropDownList ddl, string value)
         {
             ListItem item = ddl.Items.FindByValue(value);
@@ -193,6 +212,8 @@ namespace Demo_btl_10_10
         }
 
         // ================= SẢN PHẨM =================
+        // Xóa ID ẩn và toàn bộ trường nhập sản phẩm, đồng thời bỏ chọn danh mục/trạng thái để chuẩn bị
+        // cho biểu mẫu thêm mới.
         private void ClearProductForm()
         {
             hfProductId.Value = "0";
@@ -208,6 +229,7 @@ namespace Demo_btl_10_10
             ddlPStatus.ClearSelection();
         }
 
+        // Mở biểu mẫu sản phẩm ở chế độ thêm mới sau khi đặt lại các trường về giá trị ban đầu.
         protected void btnNewProduct_Click(object sender, EventArgs e)
         {
             ClearProductForm();
@@ -215,11 +237,14 @@ namespace Demo_btl_10_10
             pnlProductForm.Visible = true;
         }
 
+        // Đóng biểu mẫu sản phẩm mà không lưu thay đổi hiện tại.
         protected void btnCancelProduct_Click(object sender, EventArgs e)
         {
             pnlProductForm.Visible = false;
         }
 
+        // Xử lý lệnh sửa hoặc xóa của repeater sản phẩm; khi sửa thì nạp dữ liệu vào biểu mẫu,
+        // khi xóa thì gọi AppData và cập nhật thông báo/trạng thái biểu mẫu.
         protected void rptProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int id;
@@ -261,6 +286,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Kiểm tra đường dẫn ảnh có là URL HTTP(S) hoặc đường dẫn nội bộ an toàn hay không,
+        // đồng thời chặn scheme nguy hiểm như javascript:, data: và protocol-relative URL.
         private static bool IsSafeImage(string path)
         {
             if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
@@ -270,6 +297,8 @@ namespace Demo_btl_10_10
             return path.IndexOf(':') < 0 && !path.StartsWith("//");
         }
 
+        // Đọc và kiểm tra toàn bộ dữ liệu biểu mẫu sản phẩm, chuẩn hóa danh sách ảnh/màu,
+        // tạo ShopProduct rồi lưu mới hoặc cập nhật qua AppData và thông báo kết quả cho admin.
         protected void btnSaveProduct_Click(object sender, EventArgs e)
         {
             string name = txtPName.Text.Trim();
@@ -333,11 +362,14 @@ namespace Demo_btl_10_10
         }
 
         // ================= KHÁCH HÀNG =================
+        // Đóng biểu mẫu khách hàng mà không ghi lại các giá trị đang nhập.
         protected void btnCancelCustomer_Click(object sender, EventArgs e)
         {
             pnlCustomerForm.Visible = false;
         }
 
+        // Xử lý lệnh sửa hoặc xóa tài khoản trong repeater; khi sửa thì nạp dữ liệu vào biểu mẫu,
+        // khi xóa thì ngăn xóa tài khoản đang đăng nhập và hiển thị kết quả từ AppData.
         protected void rptCustomers_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int id;
@@ -380,6 +412,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Kiểm tra dữ liệu tài khoản, giới hạn vai trò theo lựa chọn quản trị, gọi cập nhật AppData
+        // và đồng bộ lại Session nếu admin vừa sửa chính tài khoản đang đăng nhập.
         protected void btnSaveCustomer_Click(object sender, EventArgs e)
         {
             string fullName = txtCName.Text.Trim();

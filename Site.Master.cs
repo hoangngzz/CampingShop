@@ -27,10 +27,13 @@ namespace Demo_btl_10_10
             get { return Convert.ToString(HttpContext.Current.Session["FullName"]); }
         }
 
-        // Thông báo do ShopCart.Notify ghi vào Session: đọc ra, hiện giữa màn hình một lần rồi xóa đi.
+        // Chứa thông báo do ShopCart.Notify ghi vào Session; thông báo được đọc, hiển thị một lần
+        // ở master page rồi xóa khỏi Session để không lặp lại sau lần tải trang tiếp theo.
         protected string NoticeText;
         protected bool NoticeOk = true;
 
+        // Đọc nội dung và trạng thái thành công/lỗi của thông báo tạm trong Session trước khi
+        // giao diện master được render, sau đó xóa cả hai khóa để thông báo chỉ xuất hiện một lần.
         protected void Page_PreRender(object sender, EventArgs e)
         {
             NoticeText = Session["MyShop.Notice"] as string;

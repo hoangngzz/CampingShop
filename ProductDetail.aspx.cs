@@ -28,6 +28,8 @@ namespace Demo_btl_10_10
             get { return AvgRating.ToString("0.0", Vi); }
         }
 
+        // Đọc ID sản phẩm và ảnh từ URL, tải sản phẩm, thiết lập trạng thái không tìm thấy hoặc
+        // dữ liệu chi tiết; khởi tạo màu, trạng thái thêm giỏ, biểu mẫu đánh giá và sản phẩm liên quan.
         protected void Page_Load(object sender, EventArgs e)
         {
             int id;
@@ -76,7 +78,8 @@ namespace Demo_btl_10_10
                 .Concat(others.Where(p => p.Cat != Product.Cat)).Take(4).ToList();
         }
 
-        // Đổ đánh giá sau khi nút gửi đã xử lý, để thấy ngay đánh giá vừa gửi
+        // Tải lại điểm trung bình và các đánh giá sau khi event handler đã xử lý, binding repeater
+        // và bật/tắt vùng danh sách hoặc thông báo chưa có đánh giá.
         protected void Page_PreRender(object sender, EventArgs e)
         {
             if (Product == null) return;
@@ -89,13 +92,15 @@ namespace Demo_btl_10_10
             pnlNoReviews.Visible = reviews.Count == 0;
         }
 
-        // ===== Hàm hỗ trợ cho giao diện =====
+        // Chuyển giá trị số từ binding thành chuỗi tiền Việt Nam để hiển thị giá sản phẩm.
         protected string Money(object value)
         {
             return AppData.Money(Convert.ToInt64(value));
         }
 
-        /// <summary>Chuỗi sao đầy/rỗng, ví dụ 4 sao: ★★★★☆</summary>
+        /// <summary>Chuyển điểm đánh giá thành đúng năm ký hiệu sao đầy/rỗng.</summary>
+        /// <remarks>Làm tròn theo quy tắc away-from-zero, sau đó giới hạn trong khoảng 0-5
+        /// để dữ liệu ngoài phạm vi không làm hỏng giao diện.</remarks>
         protected string Stars(object rating)
         {
             int full = (int)Math.Round(Convert.ToDouble(rating), MidpointRounding.AwayFromZero);
@@ -103,19 +108,22 @@ namespace Demo_btl_10_10
             return new string('★', full) + new string('☆', 5 - full);
         }
 
+        // Hiển thị thông báo liên quan đến thao tác thêm giỏ và gán CSS lỗi cho Label của biểu mẫu.
         private void ShowAdd(string text)
         {
             lblAddMsg.Text = Server.HtmlEncode(text);
             lblAddMsg.CssClass = "admin-msg err";
         }
 
+        // Hiển thị thông báo đánh giá, mã hóa nội dung và chọn CSS thành công hoặc lỗi theo tham số ok.
         private void ShowReview(string text, bool ok)
         {
             lblReviewMsg.Text = Server.HtmlEncode(text);
             lblReviewMsg.CssClass = ok ? "admin-msg ok" : "admin-msg err";
         }
 
-        // ===== Thêm vào giỏ (lưu cả màu đã chọn) =====
+        // Kiểm tra sản phẩm và số lượng, xác nhận màu được chọn thuộc danh sách hợp lệ, sau đó thêm
+        // biến thể vào Session cart và chuyển hướng lại trang với cờ báo đã thêm.
         protected void btnAdd_Click(object sender, EventArgs e)
         {
             if (Product == null || !Product.InStock) return;
@@ -140,7 +148,8 @@ namespace Demo_btl_10_10
             Response.Redirect("ProductDetail.aspx?id=" + Product.Id + "&added=1");
         }
 
-        // ===== Gửi đánh giá =====
+        // Kiểm tra quyền đăng nhập, điểm sao và nội dung bình luận; tạo hoặc cập nhật đánh giá qua
+        // AppData, hiển thị lỗi khi không hợp lệ và chuyển hướng để hiển thị đánh giá mới khi thành công.
         protected void btnReview_Click(object sender, EventArgs e)
         {
             if (Product == null) return;

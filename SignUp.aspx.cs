@@ -6,6 +6,9 @@ namespace Demo_btl_10_10
 {
     public partial class Signup : Page
     {
+        // Kiểm tra các trường đăng ký theo validation group, tạo đối tượng Customer từ dữ liệu
+        // biểu mẫu, lưu tài khoản mới với mật khẩu được băm; nếu trùng hoặc không hợp lệ thì
+        // hiển thị lỗi, còn nếu thành công thì thông báo và xóa hai trường mật khẩu nhạy cảm.
         protected void btnSignup_Click(object sender, EventArgs e)
         {
             // Kiểm tra dữ liệu nhập vào

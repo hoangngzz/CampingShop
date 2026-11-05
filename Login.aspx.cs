@@ -6,6 +6,8 @@ namespace Demo_btl_10_10
 {
     public partial class Login : Page
     {
+        // Xử lý việc đăng xuất khi URL có logout=1 ở lần tải trang đầu tiên; xóa toàn bộ Session
+        // rồi chuyển người dùng về trang chủ, còn các lần postback thì giữ nguyên phiên hiện tại.
         protected void Page_Load(object sender, EventArgs e)
         {
             // Login.aspx?logout=1 -> đăng xuất
@@ -17,6 +19,9 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Kiểm tra dữ liệu đăng nhập đã qua validation, xác thực tên người dùng và mật khẩu,
+        // lưu thông tin tài khoản vào Session khi thành công và chuyển admin/khách hàng tới
+        // trang phù hợp; nếu thất bại thì hiển thị thông báo lỗi màu đỏ.
         protected void btnLogin_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)

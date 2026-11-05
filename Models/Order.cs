@@ -14,6 +14,7 @@ namespace Demo_btl_10_10
         public long Price { get; set; }
         public int Qty { get; set; }
 
+        // Tính tổng tiền của dòng bằng giá tại thời điểm đặt nhân số lượng đã lưu trong đơn.
         public long LineTotal
         {
             get { return Price * Qty; }
@@ -33,21 +34,26 @@ namespace Demo_btl_10_10
         public DateTime CreatedAt { get; set; }
         public List<OrderItem> Items { get; set; }
 
+        // Khởi tạo danh sách Items rỗng để mọi Order mới có thể thêm dòng hàng ngay lập tức.
         public Order()
         {
             Items = new List<OrderItem>();
         }
 
+        // Cộng tổng LineTotal của tất cả dòng hàng để lấy giá trị đơn hàng hiện tại.
         public long Total
         {
             get { return Items.Sum(i => i.LineTotal); }
         }
 
+        // Cộng số lượng của tất cả dòng hàng để biết tổng số sản phẩm trong đơn.
         public int TotalQty
         {
             get { return Items.Sum(i => i.Qty); }
         }
 
+        // Sao chép thông tin đơn và tạo danh sách OrderItem mới để chỉnh sửa bản sao không làm
+        // thay đổi danh sách dòng hàng của đơn gốc trong Application.
         public Order Clone()
         {
             Order c = (Order)MemberwiseClone();

@@ -6,6 +6,9 @@ namespace Demo_btl_10_10
 {
     public partial class _default : System.Web.UI.Page
     {
+        // Được ASP.NET gọi khi trang chủ tải; lấy danh sách sản phẩm hiện tại rồi chia thành
+        // nhóm nổi bật (bốn sản phẩm đầu) và nhóm mới nhất (bốn sản phẩm cuối) để truyền cho
+        // hai điều khiển ProductCards hiển thị trên giao diện.
         protected void Page_Load(object sender, EventArgs e)
         {
             // Dữ liệu lấy từ Application nên admin thêm/sửa/xóa sản phẩm là trang chủ tự cập nhật

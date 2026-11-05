@@ -52,8 +52,8 @@ namespace Demo_btl_10_10
         static readonly CultureInfo Vi = new CultureInfo("vi-VN");
 
         // Giữ tham chiếu tới Application ngay từ Application_Start để không phụ thuộc HttpContext.Current
-        static HttpApplicationState _app;
-
+        static HttpApplicationState _app;   //Biến tĩnh lưu đối tượng Application, gán trong Init.
+                                            // Dấu gạch dưới đầu tên là quy ước cho biến riêng.
         static HttpApplicationState App
         {
             get { return _app ?? HttpContext.Current.Application; }
@@ -73,7 +73,9 @@ namespace Demo_btl_10_10
             get { return HostingEnvironment.MapPath("~/App_Data/data.json"); }
         }
 
-        /// <summary>Đọc file dữ liệu. Trả về null nếu chưa có file hoặc file hỏng (file hỏng được đổi tên để không bị ghi đè).</summary>
+        /// <summary>Đọc file dữ liệu từ App_Data và giải tuần tự thành DataFile.</summary>
+        /// <remarks>Trả về null nếu chưa có file hoặc file hỏng; file hỏng được đổi tên kèm thời gian
+        /// để lần khởi động sau có thể dùng dữ liệu mẫu mà không ghi đè file lỗi.</remarks>
         static DataFile LoadData()
         {
             string path = DataPath;
@@ -122,6 +124,8 @@ namespace Demo_btl_10_10
             }
         }
 
+        // Tạo danh sách tài khoản mặc định tối thiểu gồm một quản trị viên với mật khẩu được băm,
+        // dùng khi kho dữ liệu chưa có tài khoản hợp lệ.
         static List<Customer> DefaultCustomers()
         {
             return new List<Customer>
@@ -140,6 +144,8 @@ namespace Demo_btl_10_10
         }
 
         // ===== Khởi tạo (gọi từ Application_Start trong Global.asax.cs) =====
+        // Gắn vùng Application, khóa dữ liệu trong suốt quá trình nạp/khởi tạo, chọn dữ liệu từ file
+        // hoặc dữ liệu mẫu, thiết lập các danh sách và ID kế tiếp rồi ghi snapshot ban đầu ra đĩa.
         public static void Init(HttpApplicationState app)
         {
             _app = app;
@@ -177,7 +183,9 @@ namespace Demo_btl_10_10
             }
         }
 
-        // ===== Tiện ích =====
+        // ===== Hàm băm mật khẩu =====
+        // Băm mật khẩu UTF-8 bằng SHA-256 và trả về chuỗi hexadecimal 64 ký tự để lưu/so sánh,
+        // không lưu mật khẩu rõ trong dữ liệu ứng dụng.
         public static string Hash(string password)
         {
             using (SHA256 sha = SHA256.Create())
@@ -189,11 +197,13 @@ namespace Demo_btl_10_10
             }
         }
 
-        public static string Money(long n)
-        {
+        // Định dạng số nguyên theo văn hóa Việt Nam với dấu phân cách hàng nghìn và hậu tố đồng.
+        public static string Money(long n)  //"N0" là số có dấu ngăn cách hàng nghìn, 0 chữ số thập phân
+        {                                   //. Vi là văn hóa Việt Nam nên dấu ngăn cách là dấu chấm.
             return n.ToString("N0", Vi) + "đ";
         }
 
+        // Đổi mã danh mục nội bộ thành tên hiển thị; trả về mã gốc nếu key null hoặc không tồn tại.
         public static string CatName(string key)
         {
             string name;
@@ -201,6 +211,7 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Chữ thường + bỏ dấu để gõ "leu" vẫn tìm ra "Lều".</summary>
+        // Chuẩn hóa chuỗi phục vụ tìm kiếm: chuyển chữ thường, tách dấu Unicode và đổi đ thành d.
         public static string Norm(string s)
         {
             if (string.IsNullOrEmpty(s)) return string.Empty;
@@ -213,6 +224,7 @@ namespace Demo_btl_10_10
             return sb.ToString().Replace('đ', 'd');
         }
 
+        // Kiểm tra Session có role admin hay không, đồng thời xử lý an toàn trường hợp Session null.
         public static bool IsAdmin(HttpSessionState session)
         {
             return session != null &&
@@ -220,18 +232,22 @@ namespace Demo_btl_10_10
         }
 
         // ===== Sản phẩm =====
+        // Lấy danh sách sản phẩm gốc đang được lưu trong vùng Application.
         static List<ShopProduct> ProductList()
         {
             return (List<ShopProduct>)App[KProducts];
         }
 
+        // Đọc toàn bộ sản phẩm dưới khóa Application, khóa truy cập trong lúc đọc và trả về các bản sao
+        // để mã gọi không thể thay đổi trực tiếp dữ liệu dùng chung.
         public static List<ShopProduct> GetProducts()
         {
             App.Lock();
-            try { return ProductList().Select(p => p.Clone()).ToList(); }
-            finally { App.UnLock(); }
+            try { return ProductList().Select(p => p.Clone()).ToList(); }   //Với mỗi sản phẩm gốc tạo một bản sao, gom thành danh sách mới. 
+            finally { App.UnLock(); }                                       //Trang nhận được danh sách riêng, sửa thoải mái không ảnh hưởng dữ liệu chung.
         }
 
+        // Tìm một sản phẩm theo ID dưới khóa Application và trả về bản sao độc lập, hoặc null nếu không có.
         public static ShopProduct GetProduct(int id)
         {
             App.Lock();
@@ -244,6 +260,7 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Id = 0 là thêm mới, Id &gt; 0 là cập nhật.</summary>
+        // Thêm sản phẩm mới với ID kế tiếp hoặc thay thế sản phẩm cùng ID, sau đó persist toàn bộ dữ liệu.
         public static void SaveProduct(ShopProduct product)
         {
             App.Lock();
@@ -268,6 +285,8 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Xóa sản phẩm theo ID, xóa luôn các đánh giá liên quan và persist nếu có thay đổi; trả về
+        // true khi thực sự xóa được ít nhất một sản phẩm.
         public static bool DeleteProduct(int id)
         {
             App.Lock();
@@ -285,11 +304,13 @@ namespace Demo_btl_10_10
         }
 
         // ===== Tài khoản (khách hàng và quản trị viên) =====
+        // Lấy danh sách Customer gốc từ vùng Application để các phương thức tài khoản dùng nội bộ.
         static List<Customer> CustomerList()
         {
             return (List<Customer>)App[KCustomers];
         }
 
+        // Đọc tất cả tài khoản dưới khóa Application và trả về bản sao của từng tài khoản.
         public static List<Customer> GetCustomers()
         {
             App.Lock();
@@ -297,6 +318,7 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Tìm tài khoản theo ID, trả về bản sao để bảo vệ dữ liệu gốc hoặc null nếu không tìm thấy.
         public static Customer GetCustomer(int id)
         {
             App.Lock();
@@ -309,6 +331,8 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Trả về tài khoản nếu đúng tên đăng nhập + mật khẩu, ngược lại trả về null.</summary>
+        // Băm mật khẩu nhận vào, so sánh không phân biệt hoa thường cho username và trả về bản sao
+        // tài khoản phù hợp khi cả username lẫn hash đều khớp.
         public static Customer Authenticate(string username, string password)
         {
             string hash = Hash(password);
@@ -323,6 +347,8 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Kiểm tra trùng username/email với các tài khoản khác ignoreId và đặt thông báo lỗi phù hợp
+        // qua tham số out; trả về true nếu phát hiện xung đột.
         static bool IsDuplicate(List<Customer> list, int ignoreId, string username, string email, out string error)
         {
             foreach (Customer x in list)
@@ -343,6 +369,8 @@ namespace Demo_btl_10_10
             return false;
         }
 
+        // Kiểm tra trùng thông tin, cấp ID mới, băm mật khẩu, chuẩn hóa role, thêm tài khoản vào kho
+        // và ghi file; đồng thời trả ID được cấp vào đối tượng đầu vào.
         public static bool AddCustomer(Customer customer, string plainPassword, out string error)
         {
             App.Lock();
@@ -370,6 +398,8 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Cập nhật khách hàng. newPassword để trống = giữ nguyên mật khẩu cũ.</summary>
+        // Tìm tài khoản hiện có, kiểm tra trùng và bảo vệ admin cuối cùng, cập nhật thông tin cho phép
+        // cùng mật khẩu mới nếu có, rồi persist kết quả qua error.
         public static bool UpdateCustomer(Customer customer, string newPassword, out string error)
         {
             App.Lock();
@@ -403,6 +433,8 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Xóa tài khoản theo ID sau khi bảo đảm tài khoản tồn tại và không xóa admin cuối cùng;
+        // trả thông báo chi tiết qua error.
         public static bool DeleteCustomer(int id, out string error)
         {
             App.Lock();
@@ -429,12 +461,14 @@ namespace Demo_btl_10_10
         }
 
         // ===== Đánh giá =====
+        // Lấy danh sách Review gốc từ vùng Application để các thao tác đánh giá dùng nội bộ.
         static List<Review> ReviewList()
         {
             return (List<Review>)App[KReviews];
         }
 
         /// <summary>Đánh giá của một sản phẩm, mới nhất lên đầu.</summary>
+        // Lọc đánh giá theo sản phẩm, sắp xếp mới nhất trước và trả về bản sao của từng đánh giá.
         public static List<Review> GetReviews(int productId)
         {
             App.Lock();
@@ -447,6 +481,7 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Điểm trung bình (0 nếu chưa có đánh giá) và số lượt đánh giá của sản phẩm.</summary>
+        // Lọc đánh giá của sản phẩm, tính số lượng và trung bình điểm; trả average=0 khi chưa có đánh giá.
         public static void GetRating(int productId, out double average, out int count)
         {
             App.Lock();
@@ -460,6 +495,8 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Thêm đánh giá. Khách đã đăng nhập chỉ có một đánh giá cho mỗi sản phẩm: gửi lại sẽ ghi đè bản cũ.</summary>
+        // Kiểm tra điểm và sản phẩm tồn tại, sau đó cập nhật đánh giá cũ của cùng khách/sản phẩm hoặc
+        // cấp ID để thêm đánh giá mới, luôn ghi thời điểm và persist dữ liệu.
         public static bool SaveReview(Review review, out string error)
         {
             if (review.Rating < 1 || review.Rating > 5)
@@ -507,12 +544,14 @@ namespace Demo_btl_10_10
         }
 
         // ===== Đơn hàng =====
+        // Lấy danh sách Order gốc từ vùng Application để các phương thức đơn hàng dùng nội bộ.
         static List<Order> OrderList()
         {
             return (List<Order>)App[KOrders];
         }
 
         /// <summary>Đơn hàng của một tài khoản, mới nhất lên đầu (dùng cho trang theo dõi đơn hàng).</summary>
+        // Lọc đơn theo customerId, sắp xếp ID giảm dần và trả về bản sao để khách chỉ đọc dữ liệu riêng.
         public static List<Order> GetOrdersByCustomer(int customerId)
         {
             App.Lock();
@@ -525,6 +564,7 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Tất cả đơn hàng, mới nhất lên đầu.</summary>
+        // Lấy toàn bộ đơn, sắp xếp đơn mới nhất trước và trả về các bản sao cho trang quản trị.
         public static List<Order> GetOrders()
         {
             App.Lock();
@@ -532,6 +572,7 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Tìm đơn theo ID dưới khóa Application và trả bản sao độc lập hoặc null nếu không tồn tại.
         public static Order GetOrder(int id)
         {
             App.Lock();
@@ -544,6 +585,8 @@ namespace Demo_btl_10_10
         }
 
         /// <summary>Ghi đơn mới (trạng thái "Chờ xử lý") và trả về mã đơn.</summary>
+        // Cấp ID kế tiếp, sao chép đơn đầu vào, đặt trạng thái/thời gian tạo, thêm vào kho và persist,
+        // sau đó trả về mã đơn mới.
         public static int AddOrder(Order order)
         {
             App.Lock();
@@ -563,6 +606,8 @@ namespace Demo_btl_10_10
             finally { App.UnLock(); }
         }
 
+        // Kiểm tra trạng thái thuộc danh sách cho phép, tìm đơn theo ID, cập nhật trạng thái và persist;
+        // mọi lỗi nghiệp vụ được trả qua error.
         public static bool UpdateOrderStatus(int id, string status, out string error)
         {
             if (Array.IndexOf(OrderStatuses, status) < 0)
@@ -589,6 +634,8 @@ namespace Demo_btl_10_10
         }
 
         // ===== Dữ liệu mẫu ban đầu =====
+        // Tạo một ShopProduct mẫu từ các tham số cấu hình, đồng thời chuyển mảng ảnh và chuỗi màu
+        // phân cách bằng dấu phẩy thành hai danh sách thuộc tính.
         static ShopProduct Seed(int id, string name, long price, long oldPrice, string cat,
             string[] images, string description, string material, string sizes, string status, string colors)
         {
@@ -609,6 +656,8 @@ namespace Demo_btl_10_10
             return p;
         }
 
+        // Tạo một Review mẫu với thời điểm được lùi lại số ngày chỉ định để dữ liệu demo có thứ tự
+        // thời gian giống đánh giá đã tồn tại trước đó.
         static Review SeedReview(int id, int productId, string author, int rating, string comment, int daysAgo)
         {
             return new Review
@@ -623,6 +672,7 @@ namespace Demo_btl_10_10
             };
         }
 
+        // Tạo danh sách các đánh giá mẫu bằng cách gọi SeedReview cho từng bản ghi demo.
         static List<Review> SeedReviews()
         {
             return new List<Review>
@@ -634,6 +684,8 @@ namespace Demo_btl_10_10
             };
         }
 
+        // Tạo toàn bộ danh sách sản phẩm mẫu, gồm thông tin giá, ảnh, mô tả, tồn kho và màu sắc
+        // để website có dữ liệu hiển thị ngay lần chạy đầu.
         static List<ShopProduct> SeedProducts()
         {
             return new List<ShopProduct>

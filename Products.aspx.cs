@@ -15,7 +15,8 @@ namespace Demo_btl_10_10
             public long Max { get; set; }
         }
 
-        // Các mức giá lọc (Key là giá trị trên ?gia=)
+        // Cấu hình các khoảng giá mà giao diện cung cấp; Key là giá trị query string, còn Min/Max
+        // là giới hạn dùng để lọc giá sản phẩm.
         protected static readonly Option[] PriceRanges =
         {
             new Option { Key = "", Label = "Tất cả mức giá", Min = 0, Max = long.MaxValue },
@@ -24,7 +25,7 @@ namespace Demo_btl_10_10
             new Option { Key = "tren-2000", Label = "Trên 2.000.000đ", Min = 2000001, Max = long.MaxValue }
         };
 
-        // Các kiểu sắp xếp (Key là giá trị trên ?sort=)
+        // Cấu hình các lựa chọn sắp xếp và giá trị query string tương ứng để giao diện tạo liên kết.
         protected static readonly Option[] SortOptions =
         {
             new Option { Key = "default", Label = "Mặc định" },
@@ -51,6 +52,8 @@ namespace Demo_btl_10_10
             get { return SortOptions.First(s => s.Key == Sort).Label; }
         }
 
+        // Lấy danh sách sản phẩm, chuẩn hóa và kiểm tra các query string, áp dụng tìm kiếm/lọc/sắp xếp,
+        // tạo nội dung mô tả kết quả rồi binding danh sách hoặc trạng thái không có kết quả.
         protected void Page_Load(object sender, EventArgs e)
         {
             Q = (Request.QueryString["q"] ?? "").Trim();
@@ -101,7 +104,8 @@ namespace Demo_btl_10_10
             pnlNoResult.Visible = list.Count == 0;
         }
 
-        // Ghép địa chỉ trang với các bộ lọc, bỏ những giá trị mặc định
+        // Tạo URL Products.aspx từ các tham số tìm kiếm/lọc/sắp xếp; mã hóa từng giá trị và bỏ
+        // những tham số rỗng hoặc giá trị sort mặc định để URL ngắn và ổn định.
         protected string Link(string q, string loai, string gia, string sort)
         {
             List<string> parts = new List<string>();
